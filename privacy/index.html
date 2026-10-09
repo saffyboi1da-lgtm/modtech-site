@@ -20,12 +20,18 @@
 </header>
 <main class="wrap">
   <h1>Privacy Policy</h1>
-  <p class="lede">Last updated 8 October 2026.</p>
+  <p class="lede">Last updated 9 October 2026.</p>
 
   <p>ModTech is built local-first. This page explains exactly what does and doesn't leave your Mac.</p>
 
   <h2>What the application sends</h2>
-  <p>The only thing the ModTech desktop app sends over the network is a license check: your license key and an anonymous device identifier, used solely to confirm your subscription is active. It runs automatically in the background roughly every 30 minutes.</p>
+  <p>The ModTech desktop app goes online for three things, and nothing else:</p>
+  <ul>
+    <li><strong>License check.</strong> Your license key, your computer&rsquo;s name and type (for example &ldquo;Joseph&rsquo;s MacBook, macOS arm64&rdquo;), and an anonymous device identifier. This confirms your subscription is active and that your license is only used on the machines it allows. It runs when the app opens and then roughly every 30 minutes while it is running.</li>
+    <li><strong>Update check.</strong> Every few hours the app asks GitHub whether a newer version is available and downloads it if so. No account or library data is sent. As with any internet request, GitHub can see your IP address.</li>
+    <li><strong>Feedback, only if you send it.</strong> If you press the feedback button and send a message, we receive that message together with your license key, the app version and your computer&rsquo;s name, so we can follow up. Nothing is sent unless you press Send.</li>
+  </ul>
+  <p>License and feedback records are stored with our hosting provider, Supabase. As with any internet request, our servers can see your IP address.</p>
 
   <h2>What stays on your Mac</h2>
   <p>Your asset library, tech packs, measurements, images, and every other piece of garment data you create or import stay on your Mac. None of it is uploaded, synced, or sent to us as part of normal use.</p>
@@ -40,7 +46,7 @@
   <p>ModTech does not include any third-party analytics or tracking SDK. We do not know what you build in the app.</p>
 
   <h2>Your rights</h2>
-  <p>You can request a copy of, or deletion of, any account data we hold (your license key, email, and device activations) by contacting us below.</p>
+  <p>You can request a copy of, or deletion of, any account data we hold (your license key, email, computer name, device activations, and any feedback you sent) by contacting us below.</p>
 
   <h2>Contact</h2>
   <p><a href="mailto:contact@modtech.app">contact@modtech.app</a></p>

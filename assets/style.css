@@ -90,3 +90,22 @@ footer.site {
 footer.site nav { margin-top: 10px; }
 footer.site nav a { color: var(--muted); margin-right: 16px; text-decoration: underline; }
 code { background: #eee; padding: 1px 5px; }
+
+.plans.single { grid-template-columns: minmax(0, 360px); }
+.buy {
+  font: inherit;
+  background: var(--fg);
+  color: var(--bg);
+  border: 1px solid var(--line);
+  padding: 12px 20px;
+  cursor: pointer;
+  margin: 8px 0 4px;
+}
+.buy:hover:not(:disabled) { background: var(--bg); color: var(--fg); }
+.buy:disabled { opacity: .5; cursor: default; }
+.sandbox-banner {
+  border: 2px solid var(--line);
+  padding: 8px 12px;
+  margin: 16px 0;
+  font-weight: 700;
+}

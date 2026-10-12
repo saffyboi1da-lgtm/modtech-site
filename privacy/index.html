@@ -20,33 +20,40 @@
 </header>
 <main class="wrap">
   <h1>Privacy Policy</h1>
-  <p class="lede">Last updated 9 October 2026.</p>
+  <p class="lede">Last updated [[SET the date on the day this is published]].</p>
 
-  <p>ModTech is built local-first. This page explains exactly what does and doesn't leave your Mac.</p>
+  <p>ModTech is operated by Joseph Berhanu, a sole trader in Melbourne, Victoria, Australia. It is built local-first. This page explains what leaves your Mac, who receives it, and what we keep.</p>
 
   <h2>What the application sends</h2>
-  <p>The ModTech desktop app goes online for three things, and nothing else:</p>
+  <p>The ModTech desktop app goes online for the things below, and nothing else:</p>
   <ul>
-    <li><strong>License check.</strong> Your license key, your computer&rsquo;s name and type (for example &ldquo;Joseph&rsquo;s MacBook, macOS arm64&rdquo;), and an anonymous device identifier. This confirms your subscription is active and that your license is only used on the machines it allows. It runs when the app opens and then roughly every 30 minutes while it is running.</li>
-    <li><strong>Update check.</strong> Every few hours the app asks GitHub whether a newer version is available and downloads it if so. No account or library data is sent. As with any internet request, GitHub can see your IP address.</li>
-    <li><strong>Feedback, only if you send it.</strong> If you press the feedback button and send a message, we receive that message together with your license key, the app version and your computer&rsquo;s name, so we can follow up. Nothing is sent unless you press Send.</li>
+    <li><strong>Licence check.</strong> When you enter your licence key, the app sends the key, a device identifier (a one-way scramble of your Mac&rsquo;s hardware ID; it is the same every time on that Mac), and your Mac&rsquo;s network name with its system type, for example &ldquo;Mayas-MacBook-Pro.local &middot; darwin arm64&rdquo;. The network name often contains your own name. After that, while the app is open, it sends the key and the device identifier when the app opens, roughly every 30 minutes, and when you press Check again. If your subscription has ended and this Mac has no seat, it also sends the Mac&rsquo;s name again each time it tries to rejoin. This confirms your subscription is active and that your licence is only used on the Macs it allows. We also look at these device identifiers by hand, across licences, when a refund is requested, to help spot repeated misuse of our refund guarantee.</li>
+    <li><strong>Feedback, only if you send it.</strong> If you press the feedback button and send a message, we receive that message together with your licence key (if you have one), the app version, and your Mac&rsquo;s network name and system type, so we can follow up. Nothing is sent unless you press Send (or Cmd+Return).</li>
+    <li><strong>Links you click.</strong> On the licence screen, &ldquo;Get ModTech&rdquo; opens our pricing page in your browser and &ldquo;Lost your key?&rdquo; opens an email to us in your mail app. Nothing happens until you click.</li>
   </ul>
-  <p>License and feedback records are stored with our hosting provider, Supabase. As with any internet request, our servers can see your IP address.</p>
+
+  <h2>Who receives it, and what we keep</h2>
+  <ul>
+    <li><strong>Supabase</strong>, our database and hosting provider (our database is in Sydney, Australia), stores our licence records: your licence key; the subscription status, paid-through date and number of seats; Paddle&rsquo;s reference numbers for your subscription and customer record (not your name or email); one record for each Mac you activate (its device identifier, its name, when it was activated and when it was last seen); any feedback you send; and a copy of each subscription notification Paddle sends us, which holds Paddle&rsquo;s reference numbers, billing dates and price but no name, email or card details. Supabase and its infrastructure providers can see your IP address when your app contacts our licence service, and Supabase keeps its own request logs, including IP addresses, for about 7 days. We also keep a log of your IP address and the time of each activation, seat-list, seat-release or feedback request, only to stop abuse. Entries older than a day are deleted the next time anyone activates a Mac, lists seats, releases a seat or sends feedback, so in a quiet week an entry can stay a few days.</li>
+    <li><strong>Discord.</strong> So we can respond quickly, our licence system posts alerts to a private channel that only the people who run ModTech can read: a new paid licence (Paddle&rsquo;s reference numbers for the subscription and customer, the number of seats, and the last five characters of the key); a new Mac activated (its name); a change to a licence&rsquo;s status or seat count, with the paid-through date; and any feedback you send (the first 1,500 characters, with the last five characters of your key, the app version and your Mac&rsquo;s name). Your email address is never posted. Discord, run by Discord Inc., stores these posts on its servers, and they stay there until we delete them.</li>
+    <li><strong>Email.</strong> Mail to contact@modtech.app passes through ImprovMX, an email-forwarding service that keeps a log of the sender and subject for 7 days, not the message. It arrives in a Google (Gmail) mailbox that we run for ModTech, as does anything you send us. Your licence key is emailed to you automatically through our email provider, Resend, a US company that sends from its Tokyo (Japan) region. Resend receives your email address, your first name if you gave it to Paddle, and the message, which contains your licence key, and keeps a copy for 30 days, stored in the United States. We do not keep a copy of that email in our mailbox. If a key ever has to be sent by hand, a copy stays in the mailbox it was sent from.</li>
+    <li><strong>How long.</strong> We do not delete licence, feedback or Paddle-notification records automatically. They stay until you ask us to delete them. A Mac&rsquo;s activation record, including its device identifier, is removed when its seat is freed, by you or by us, or automatically when the seat is needed for a new Mac and it has not been used for 14 days. Discord posts and mail in our mailbox stay until we delete them. Copies held by our providers expire on their own: Supabase keeps daily backups for 7 days and request logs for about 7 days, ImprovMX keeps its logs for 7 days, and Resend (once in use) keeps emails for 30 days.</li>
+  </ul>
 
   <h2>What stays on your Mac</h2>
-  <p>Your asset library, tech packs, measurements, images, and every other piece of garment data you create or import stay on your Mac. None of it is uploaded, synced, or sent to us as part of normal use.</p>
+  <p>Your asset library, tech packs, measurements, images, and every other piece of garment data you create or import stay on your Mac. None of it is uploaded, synced, or sent to us as part of normal use. Your licence key and device identifier are also stored on your Mac, encrypted with the macOS keychain when it is available.</p>
 
-  <h2>Payment data</h2>
-  <p>We never see or store your card details. Payments are handled entirely by Paddle.com Market Limited, our Merchant of Record. See <a href="https://www.paddle.com/legal/privacy" target="_blank" rel="noopener">Paddle's Privacy Policy</a> for how they handle payment and billing data.</p>
+  <h2>Payment data and your email address</h2>
+  <p>We never see or store your full card number or security code. Payments are handled entirely by Paddle.com Market Limited, our Merchant of Record, who is the seller and holds your order, billing and tax details. Paddle may show us your card type, the last four digits and the name on the card. See <a href="https://www.paddle.com/legal/privacy" target="_blank" rel="noopener">Paddle's Privacy Policy</a> for how they handle that data. When you subscribe, Paddle makes your email address and country available to us, and your name if you gave it, so we can send you your licence key and help you. We do not copy your email address into our licence database. It is held by Paddle and in our email systems.</p>
 
   <h2>This website</h2>
-  <p>This website does not use tracking cookies or third-party analytics.</p>
+  <p>This website sets no cookies of its own and runs no analytics of ours. It is hosted on GitHub Pages, so GitHub and its content-delivery network can see your IP address when you load a page, and GitHub logs it for security. The pricing page also loads the checkout script of Paddle.com Market Limited. Paddle can see your IP address and browser details when you open that page, and may use cookies or similar storage for checkout, fraud prevention and its own analytics.</p>
 
   <h2>No analytics in the app</h2>
-  <p>ModTech does not include any third-party analytics or tracking SDK. We do not know what you build in the app.</p>
+  <p>ModTech does not include any third-party analytics or tracking SDK. The app never sends us your packs or library. If you book a setup session, email us files, or write about your work in feedback, we see what you show or send.</p>
 
   <h2>Your rights</h2>
-  <p>You can request a copy of, or deletion of, any account data we hold (your license key, email, computer name, device activations, and any feedback you sent) by contacting us below.</p>
+  <p>You can ask us for a copy of, or the deletion of, the data we hold about you: your licence key and subscription record (including Paddle&rsquo;s reference numbers for you), the names and device identifiers of your Macs, any feedback you sent, and the emails we have exchanged. Write to contact@modtech.app. We respond to privacy requests without undue delay and within the legal deadlines that apply, normally within 28 calendar days. If the law lets us extend that time, we tell you why and when to expect our response. Some records may have to be kept for legal obligations or legal claims; if so, we explain the limits on deletion. Deleting your licence ends your access, so we will cancel your subscription first. Copies in backups and at our providers expire on their own (see How long). Your order and payment records are held by Paddle, so requests about those go to Paddle too; we will pass yours on if you ask.</p>
 
   <h2>Contact</h2>
   <p><a href="mailto:contact@modtech.app">contact@modtech.app</a></p>

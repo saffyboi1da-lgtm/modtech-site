@@ -4,65 +4,120 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Pricing — ModTech</title>
-<meta name="description" content="ModTech pricing: one plan, US$29 per month, for independent apparel brands building tech packs on Mac.">
-<link rel="stylesheet" href="/assets/style.css">
+<meta name="description" content="ModTech pricing: one plan, US$29 per month, one seat per Mac, for independent apparel brands building tech packs on Mac.">
+<link rel="canonical" href="https://modtech.app/pricing/">
+<meta name="theme-color" content="#0e0e0e">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://modtech.app/pricing/">
+<meta property="og:title" content="Pricing — ModTech">
+<meta property="og:description" content="One plan, US$29 a month, one seat per Mac. 14-day money-back guarantee on your first payment.">
+<meta property="og:image" content="https://modtech.app/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="ModTech. Your next techpack is mostly already built. The five modules: brand, pages, sizes, colourways, library.">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/assets/mark.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="stylesheet" href="/assets/style.css?v=9">
 </head>
 <body>
 <header class="site">
   <div class="wrap">
-    <a class="word" href="/">MODTECH</a>
+    <a class="lockup" href="/">
+      <svg class="mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><g fill="currentColor"><polygon points="4,14 10,8 18,8 62,52 62,64 58,68 50,68 20,36 20,88 16,92 8,92 4,88"/><polygon points="38,17 46,8 90,8 96,14 96,20 90,26 46,26"/><polygon points="66,32 92,32 96,36 96,86 90,92 74,92 74,46 66,38"/></g></svg>
+      <b>MODTECH</b>
+      <span>modular techpacks for mac</span>
+    </a>
     <nav>
-      <a href="/pricing">Pricing</a>
+      <a href="/">Home</a>
       <a href="/terms">Terms</a>
       <a href="/privacy">Privacy</a>
       <a href="/refunds">Refunds</a>
     </nav>
   </div>
 </header>
-<main class="wrap">
-  <span class="tag">Early access</span>
-  <h1>Pricing</h1>
-  <p class="lede">One plan, one price. Cancel any time.</p>
 
-  <div class="plans single">
-    <div class="plan">
-      <h3>Solo</h3>
-      <div class="price">US$29<small> / month</small></div>
-      <ul>
-        <li>1 seat (one Mac)</li>
-        <li>Unlimited tech packs</li>
-        <li>Full asset library + right-click pull</li>
-        <li>PDF export</li>
-        <li>Automatic daily backups of your library database, kept on your Mac, and help moving to a new Mac</li>
-        <li>Early access: one 30-minute setup session per customer, on one of your own packs (email us to book it)</li>
-      </ul>
-    </div>
+<main>
+  <div class="wrap hero">
+    <p class="status"><span class="dot" aria-hidden="true">&#9679;</span> In development &middot; joining by email</p>
+    <h1>One plan.</h1>
+    <p class="lede">One price, one seat, cancel any time. Subscriptions are not open yet, so nothing here charges you &mdash; this is the price we will open at.</p>
   </div>
 
-  <h2>Subscribe</h2>
-  <div class="sandbox-banner" id="sandbox-banner" hidden>TEST MODE. This is a sandbox checkout: no real card is charged.</div>
-  <button type="button" class="buy" id="buy">Subscribe for US$29 / month</button>
+  <div class="wrap">
+
+    <section id="plan">
+      <div class="sec"><span class="n">01</span><h2>Solo</h2></div>
+      <div class="price-card">
+        <p class="label">Price when subscriptions open</p>
+        <p class="amount">US$29<small> / month</small></p>
+        <ul>
+          <li>1 seat (one Mac)</li>
+          <li>Unlimited techpacks</li>
+          <li>Full asset library and right-click pull</li>
+          <li>PDF export</li>
+          <li>Automatic daily backups of your library database, kept on your Mac, and help moving to a new Mac</li>
+          <li>One 30-minute setup session per customer, on one of your own packs (email us to book it)</li>
+        </ul>
+      </div>
   <p class="note">Subscriptions are not open yet. Email <a href="mailto:contact@modtech.app">contact@modtech.app</a> and we will tell you when the Mac app is ready.</p>
+    </section>
 
-  <h2>What to know before you buy</h2>
-  <ul>
-    <li><strong>Mac only.</strong> Mac with Apple Silicon. Tested on macOS 15.5; Intel Macs and other macOS versions have not yet been verified.</li>
-    <li><strong>One seat is one Mac.</strong> A Mac that has not been used for 14 days can be released to make room for a new one. There is no shared team library yet: each person has their own copy of their own library.</li>
-    <li><strong>Your packs stay on your Mac.</strong> ModTech goes online only to check your licence and to send feedback if you choose to.</li>
-    <li>If your subscription ends you keep access to the end of the period you paid for, plus 7 days (what happens after a refund is set out in the refund policy). After that ModTech becomes read-only: you can still open your library and export your tech packs as PDF.</li>
-  </ul>
+    <section id="waitlist-section">
+      <div class="sec"><span class="n">02</span><h2>Join the waitlist</h2></div>
+      <form class="wl" id="waitlist" method="post" novalidate>
+        <label for="wl-email">We will tell you when ModTech opens.</label>
+        <div class="row">
+          <input type="email" id="wl-email" name="email" placeholder="you@yourbrand.com" autocomplete="email" required>
+          <button type="submit">Join waitlist</button>
+        </div>
+        <div class="row optional">
+          <div class="field"><label for="wl-brand">Brand (optional)</label><input type="text" id="wl-brand" name="brand" placeholder="e.g. Northbound" autocomplete="organization" maxlength="120"></div>
+          <div class="field"><label for="wl-makes">What you make (optional)</label><input type="text" id="wl-makes" name="makes" placeholder="e.g. denim, outerwear" maxlength="160"></div>
+        </div>
+        <div class="hp" aria-hidden="true"><label for="wl-ref">Reference</label><input type="text" id="wl-ref" name="wl_ref" tabindex="-1" autocomplete="new-password"></div>
+        <p class="consent">We will email you when ModTech opens, and may invite you to the paid pilot. Nothing else, and every email has an unsubscribe. See the <a href="/privacy#waitlist">privacy policy</a>.</p>
+        <p class="status-msg" role="status" aria-live="polite"></p>
+        <noscript><p class="note">Email <a href="mailto:contact@modtech.app">contact@modtech.app</a> to be added to the waitlist.</p></noscript>
+      </form>
+    </section>
 
-  <h2>Guarantee</h2>
-  <p>14-day money-back guarantee on your first payment, once per purchaser. See the <a href="/refunds">refund policy</a>.</p>
+    <section id="before">
+      <div class="sec"><span class="n">03</span><h2>What to know before you buy</h2></div>
+      <ul>
+        <li><strong>Mac only.</strong> Mac with Apple Silicon. Tested on macOS 15.5; Intel Macs and other macOS versions have not yet been verified.</li>
+        <li><strong>One seat is one Mac.</strong> Your Mac keeps its seat for as long as you hold the subscription, however long you leave ModTech closed. Moving to a new Mac is self-service: if the old one has not checked in for 14 days, the new one takes the seat by itself, and you can always email us to free it sooner. There is no shared team library yet: each person has their own copy of their own library.</li>
+        <li><strong>Your packs stay on your Mac.</strong> ModTech goes online only to check your licence and to send feedback if you choose to. It needs an internet connection to keep editing.</li>
+        <li>If your subscription ends you keep access to the end of the period you paid for, plus 7 days (what happens after a refund is set out in the refund policy). After that ModTech becomes read-only: you can still open your library and export your tech packs as PDF.</li>
+      </ul>
+    </section>
 
-  <h2>Billing</h2>
-  <p>The price is US$29 a month. In Australia, New Zealand, the UK, Germany, France and the rest of the EU, any tax that applies is already included in that price. In the US and Canada, sales tax is added on top where it applies, so some buyers pay more than US$29 and some pay exactly US$29. The checkout shows your total, with the tax, before you pay.</p>
-  <p>Billing is handled by Paddle.com Market Limited, our Merchant of Record. Prices are in US dollars. If your card is in another currency, your bank converts the amount and may add a fee.</p>
+    <section id="guarantee">
+      <div class="sec"><span class="n">04</span><h2>Guarantee</h2></div>
+      <p>14-day money-back guarantee on your first payment, once per purchaser. See the <a href="/refunds">refund policy</a>.</p>
+    </section>
 
+    <section id="billing">
+      <div class="sec"><span class="n">05</span><h2>Billing</h2></div>
+      <p>The price is US$29 a month. In Australia, New Zealand, the UK, Germany, France and the rest of the EU, any tax that applies is already included in that price. In the US and Canada, sales tax is added on top where it applies, so some buyers pay more than US$29 and some pay exactly US$29. The checkout shows your total, with the tax, before you pay.</p>
+      <p>Billing is handled by Paddle.com Market Limited, our Merchant of Record. Prices are in US dollars. If your card is in another currency, your bank converts the amount and may add a fee.</p>
+    </section>
+
+  </div>
 </main>
+
 <footer class="site">
   <div class="wrap">
-    <div>&copy; 2026 Joseph Berhanu. ModTech.</div>
+    <div class="legal">
+      <div style="display:flex;align-items:center;gap:8px;color:var(--ink);margin-bottom:8px">
+        <svg width="16" height="16" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><g fill="currentColor"><polygon points="4,14 10,8 18,8 62,52 62,64 58,68 50,68 20,36 20,88 16,92 8,92 4,88"/><polygon points="38,17 46,8 90,8 96,14 96,20 90,26 46,26"/><polygon points="66,32 92,32 96,36 96,86 90,92 74,92 74,46 66,38"/></g></svg>
+        <b style="letter-spacing:0.05em">MODTECH</b> &mdash; modular techpacks for mac
+      </div>
+      &copy; 2026 ModTech.<br>
+      Payments by Paddle.com Market Limited, our Merchant of Record.<br>
+      <a href="mailto:contact@modtech.app">contact@modtech.app</a>
+    </div>
     <nav>
       <a href="/pricing">Pricing</a>
       <a href="/terms">Terms of Service</a>
@@ -74,5 +129,7 @@
 <script src="/assets/checkout-config.js"></script>
 <script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
 <script src="/assets/checkout.js"></script>
+<script src="/assets/waitlist-config.js?v=2"></script>
+<script src="/assets/waitlist.js?v=2"></script>
 </body>
 </html>

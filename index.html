@@ -3,46 +3,501 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ModTech — tech packs for independent apparel brands</title>
-<meta name="description" content="ModTech is a Mac app that builds factory tech packs from your own brand's library. Right-click to fill any slot from your own history — no digging through folders.">
-<link rel="stylesheet" href="/assets/style.css">
+<title>ModTech — modular techpacks for Mac</title>
+<meta name="description" content="Your brand, pages, sizes, colourways and library are made once and kept outside any one pack. Assemble the next techpack from them instead of retyping it, then export the PDF your factory reads.">
+<link rel="canonical" href="https://modtech.app/">
+<meta name="theme-color" content="#0e0e0e">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://modtech.app/">
+<meta property="og:title" content="ModTech — modular techpacks for Mac">
+<meta property="og:description" content="Your next techpack is mostly already built. Swap one module, keep the rest.">
+<meta property="og:image" content="https://modtech.app/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="ModTech. Your next techpack is mostly already built. The five modules: brand, pages, sizes, colourways, library.">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/assets/mark.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="stylesheet" href="/assets/style.css?v=9">
 </head>
 <body>
 <header class="site">
   <div class="wrap">
-    <a class="word" href="/">MODTECH</a>
+    <a class="lockup" href="/">
+      <svg class="mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><g fill="currentColor"><polygon points="4,14 10,8 18,8 62,52 62,64 58,68 50,68 20,36 20,88 16,92 8,92 4,88"/><polygon points="38,17 46,8 90,8 96,14 96,20 90,26 46,26"/><polygon points="66,32 92,32 96,36 96,86 90,92 74,92 74,46 66,38"/></g></svg>
+      <b>MODTECH</b>
+      <span>modular techpacks for mac</span>
+    </a>
     <nav>
-      <a href="/pricing">Pricing</a>
-      <a href="/terms">Terms</a>
-      <a href="/privacy">Privacy</a>
-      <a href="/refunds">Refunds</a>
+      <a href="#modules">Modules</a>
+      <a href="#compare">Compare</a>
+      <a href="#specs">Specs</a>
+      <a href="/pricing">Price</a>
+      <a class="cta" href="#join">Join</a>
     </nav>
   </div>
 </header>
-<main class="wrap">
-  <span class="tag">Early access — Mac</span>
-  <h1>Build tech packs from your own library. Right-click, not dig.</h1>
-  <p class="lede">ModTech stores your brand's garment assets — flats, artwork, fabrics, hardware, size charts — in one searchable library, and builds the factory-ready tech pack PDF. Fill any slot by right-click from your own history. Nothing invented, nothing uploaded.</p>
 
-  <h2>What it does</h2>
-  <ul>
-    <li>A searchable library for every asset your brand already has.</li>
-    <li>Right-click any tech-pack slot to pull from your own prior packs — no scrolling through folders.</li>
-    <li>Build the full factory tech-pack PDF: cover, construction, colourways, trims, hardware, artwork, POM, QC.</li>
-    <li>Your library and tech packs stay on your Mac. The app goes online only to check your license, and to send feedback if you choose to.</li>
-  </ul>
+<main>
 
-  <h2>Who it's for</h2>
-  <p>Independent streetwear and cut-and-sew labels who are tired of rebuilding the same tech pack from scratch every time, and tired of folders.</p>
+  <!-- ============ hero ============ -->
+  <div class="wrap hero">
+    <div class="hero-grid">
+      <div>
+        <p class="status"><span class="dot" aria-hidden="true">&#9679;</span> In development &middot; joining by email</p>
+        <h1>Your next techpack is mostly already built.</h1>
+        <p class="lede">Your brand, your pages, your sizes, your colourways, your library &mdash; made once, kept outside any one pack. Assemble the next techpack from them instead of retyping it, then export the PDF your factory reads.</p>
+        <p class="hero-proof">Built by a production manager who has made about a thousand of them. His estimate: most of an afternoon in a spreadsheet, a fraction of that here &mdash; and a style he has already built is faster again.</p>
 
-  <h2>Status</h2>
-  <p>ModTech is in early access on Mac. We're working directly with a small number of brands while we shape it. You can <a href="/pricing">see the pricing</a>, or write to us first.</p>
+        <form class="wl" id="waitlist" method="post" novalidate>
+          <label for="wl-email">Be told when it opens.</label>
+          <div class="row">
+            <input type="email" id="wl-email" name="email" placeholder="you@yourbrand.com" autocomplete="email" required>
+            <button type="submit">Join the list</button>
+          </div>
+          <div class="row optional">
+            <div class="field"><label for="wl-brand">Brand (optional)</label><input type="text" id="wl-brand" name="brand" placeholder="e.g. Northbound" autocomplete="organization" maxlength="120"></div>
+            <div class="field"><label for="wl-makes">What you make (optional)</label><input type="text" id="wl-makes" name="makes" placeholder="e.g. denim, outerwear" maxlength="160"></div>
+          </div>
+          <div class="hp" aria-hidden="true"><label for="wl-ref">Reference</label><input type="text" id="wl-ref" name="wl_ref" tabindex="-1" autocomplete="new-password"></div>
+          <p class="consent">We will email you when ModTech opens, and may invite you to the paid pilot. Nothing else, and every email has an unsubscribe. See the <a href="/privacy#waitlist">privacy policy</a>.</p>
+          <p class="status-msg" role="status" aria-live="polite"></p>
+          <noscript><p class="note">Email <a href="mailto:contact@modtech.app?subject=ModTech%20waitlist">contact@modtech.app</a> and we will add you.</p></noscript>
+        </form>
+      </div>
 
-  <p><a href="mailto:contact@modtech.app">contact@modtech.app</a></p>
+      <svg class="hero-art" viewBox="0 56 612 262" role="img" aria-label="A techpack sheet drawn abstractly, with five numbered leader lines labelling the modules it is assembled from: brand, pages, sizes, colourways and library.">
+        <defs><style>
+          .hl{font-family:'IBM Plex Mono',monospace;font-size:10px;fill:#f0f0f0;letter-spacing:.1em}
+          .hn{font-family:'IBM Plex Mono',monospace;font-size:10px;fill:#ff4d4d}
+          .hs{font-family:'IBM Plex Mono',monospace;font-size:8px;fill:#8c8c8c}
+          .ht{font-family:'IBM Plex Mono',monospace;font-size:6px;fill:#fff;letter-spacing:.12em}
+          .htd{font-family:'IBM Plex Mono',monospace;font-size:6px;fill:#777;letter-spacing:.06em}
+          .ld{stroke:#4f4f4f;stroke-width:1;fill:none}
+        </style></defs>
+
+        <rect x="150" y="70" width="330" height="236" fill="#171717" stroke="#333"/>
+        <rect x="156" y="67" width="330" height="236" fill="#1d1d1d" stroke="#333"/>
+        <rect x="162" y="64" width="330" height="236" fill="#fff"/>
+
+        <rect x="162" y="64" width="330" height="18" fill="#1a1a1a"/>
+        <rect x="169" y="70" width="28" height="6" fill="#fff"/>
+        <rect x="250" y="72" width="34" height="3" fill="#555"/>
+        <rect x="290" y="72" width="24" height="3" fill="#555"/>
+        <text x="485" y="76" text-anchor="end" class="ht">01 / 09</text>
+
+        <line x1="277" y1="82" x2="277" y2="286" stroke="#ccc"/>
+        <rect x="169" y="90" width="100" height="11" fill="#1a1a1a"/>
+        <text x="173" y="98" class="ht">GARMENT SPEC</text>
+
+        <g>
+          <rect x="169" y="110" width="26" height="3.5" fill="#999"/><rect x="233" y="110" width="36" height="3.5" fill="#1a1a1a"/>
+          <line x1="169" y1="118" x2="269" y2="118" stroke="#e4e4e4"/>
+          <rect x="169" y="124" width="32" height="3.5" fill="#999"/><rect x="221" y="124" width="48" height="3.5" fill="#1a1a1a"/>
+          <line x1="169" y1="132" x2="269" y2="132" stroke="#e4e4e4"/>
+          <rect x="169" y="138" width="22" height="3.5" fill="#999"/><rect x="239" y="138" width="30" height="3.5" fill="#1a1a1a"/>
+          <line x1="169" y1="146" x2="269" y2="146" stroke="#e4e4e4"/>
+        </g>
+
+        <text x="169" y="166" class="htd">POINTS OF MEASURE</text>
+        <line x1="169" y1="170" x2="269" y2="170" stroke="#ccc"/>
+        <g>
+          <rect x="169" y="176" width="15" height="3.5" fill="#bbb"/>
+          <rect x="192" y="176" width="12" height="3.5" fill="#1a1a1a"/><rect x="210" y="176" width="12" height="3.5" fill="#1a1a1a"/>
+          <rect x="228" y="176" width="12" height="3.5" fill="#1a1a1a"/><rect x="246" y="176" width="12" height="3.5" fill="#1a1a1a"/>
+          <rect x="169" y="186" width="15" height="3.5" fill="#bbb"/>
+          <rect x="192" y="186" width="12" height="3.5" fill="#1a1a1a"/><rect x="210" y="186" width="12" height="3.5" fill="#1a1a1a"/>
+          <rect x="228" y="186" width="12" height="3.5" fill="#1a1a1a"/><rect x="246" y="186" width="12" height="3.5" fill="#1a1a1a"/>
+          <rect x="169" y="196" width="15" height="3.5" fill="#bbb"/>
+          <rect x="192" y="196" width="12" height="3.5" fill="#1a1a1a"/><rect x="210" y="196" width="12" height="3.5" fill="#1a1a1a"/>
+          <rect x="228" y="196" width="12" height="3.5" fill="#1a1a1a"/><rect x="246" y="196" width="12" height="3.5" fill="#1a1a1a"/>
+        </g>
+
+        <text x="169" y="224" class="htd">COLOURWAYS</text>
+        <line x1="169" y1="228" x2="269" y2="228" stroke="#ccc"/>
+        <rect x="169" y="234" width="18" height="13" fill="#27388b"/>
+        <rect x="191" y="234" width="18" height="13" fill="#2d2d2d"/>
+        <rect x="213" y="234" width="18" height="13" fill="#8a8f98"/>
+        <rect x="169" y="254" width="34" height="3" fill="#bbb"/><rect x="209" y="254" width="46" height="3" fill="#1a1a1a"/>
+        <rect x="169" y="262" width="28" height="3" fill="#bbb"/><rect x="203" y="262" width="52" height="3" fill="#1a1a1a"/>
+
+        <!-- A boxy overshirt: broad straight panels, dropped square sleeves, a
+             straight placket and square chest pockets. The neckline keeps its
+             real curve; everything dominant stays angular. -->
+        <g stroke="#1f1d1d" stroke-width="1.1" fill="#e9e9ec" stroke-linejoin="miter">
+          <rect x="338" y="124" width="26" height="60"/>
+          <rect x="436" y="124" width="26" height="60"/>
+          <path d="M364 120 H378 Q400 131 422 120 H436 V228 H364 Z"/>
+          <path d="M378 119 L401 127 L401 142 L381 130 Z"/>
+          <path d="M422 119 L399 127 L399 142 L419 130 Z"/>
+          <line x1="364" y1="148" x2="436" y2="148"/>
+          <line x1="394" y1="140" x2="394" y2="228"/>
+          <line x1="402" y1="140" x2="402" y2="228"/>
+          <rect x="371" y="158" width="18" height="18"/>
+          <rect x="411" y="158" width="18" height="18"/>
+          <line x1="364" y1="220" x2="436" y2="220" stroke-dasharray="3 3"/>
+        </g>
+        <g>
+          <circle cx="428" cy="134" r="7" fill="#d33"/><text x="428" y="137" text-anchor="middle" class="ht">1</text>
+          <circle cx="371" cy="158" r="7" fill="#d33"/><text x="371" y="161" text-anchor="middle" class="ht">2</text>
+          <circle cx="436" cy="208" r="7" fill="#d33"/><text x="436" y="211" text-anchor="middle" class="ht">3</text>
+          <rect x="352" y="246" width="96" height="3" fill="#ccc"/>
+          <rect x="352" y="254" width="72" height="3" fill="#ccc"/>
+        </g>
+
+        <line x1="162" y1="286" x2="492" y2="286" stroke="#ccc"/>
+        <rect x="169" y="292" width="24" height="3" fill="#999"/>
+        <rect x="292" y="292" width="70" height="3" fill="#ccc"/>
+        <rect x="452" y="292" width="30" height="3" fill="#999"/>
+
+        <g>
+          <text x="8" y="76" class="hn">01</text><text x="28" y="76" class="hl">BRAND</text>
+          <path class="ld" d="M104 72 H150 L169 73"/><circle cx="169" cy="73" r="2" fill="#d33"/>
+        </g>
+        <g>
+          <text x="8" y="140" class="hn">02</text><text x="28" y="140" class="hl">PAGES</text>
+          <path class="ld" d="M94 136 H128 L152 170"/><circle cx="152" cy="170" r="2" fill="#d33"/>
+        </g>
+        <g>
+          <text x="8" y="196" class="hn">03</text><text x="28" y="196" class="hl">SIZES</text>
+          <path class="ld" d="M88 192 H140 L167 186"/><circle cx="167" cy="186" r="2" fill="#d33"/>
+        </g>
+        <g>
+          <text x="8" y="252" class="hn">04</text><text x="28" y="252" class="hl">COLOURWAYS</text>
+          <path class="ld" d="M136 248 H152 L167 242"/><circle cx="167" cy="242" r="2" fill="#d33"/>
+        </g>
+        <g>
+          <text x="516" y="168" class="hn">05</text><text x="538" y="168" class="hl">LIBRARY</text>
+          <path class="ld" d="M512 164 H494 L452 160"/><circle cx="452" cy="160" r="2" fill="#d33"/>
+        </g>
+      </svg>
+    </div>
+  </div>
+
+  <!-- ============ modules ============ -->
+  <div class="band band--panel" id="modules">
+    <div class="wrap">
+      <div class="sec"><span class="n">01</span><h2>The five modules</h2></div>
+      <p class="band-lede">A techpack is assembled, not retyped.</p>
+      <p class="band-sub" style="margin-bottom:clamp(28px,4vw,52px)">Each module is something you already made, kept outside any one pack so every pack after this one can use it.</p>
+      <div class="modules">
+        <div class="module">
+          <p class="n">01</p>
+          <h3>Brand</h3>
+          <p>Start from a brand you saved. The wordmark, logo and footer arrive with it.</p>
+        </div>
+        <div class="module">
+          <p class="n">02</p>
+          <h3>Pages</h3>
+          <p>Pull a whole page across from an earlier pack. It arrives as your own copy.</p>
+        </div>
+        <div class="module">
+          <p class="n">03</p>
+          <h3>Sizes</h3>
+          <p>Pull the measurements from a saved template, or from the pack you built last week.</p>
+        </div>
+        <div class="module">
+          <p class="n">04</p>
+          <h3>Colourways</h3>
+          <p>Change a colourway once. The bill-of-materials rows and artwork that reference it follow.</p>
+        </div>
+        <div class="module">
+          <p class="n">05</p>
+          <h3>Library</h3>
+          <p>Every file you have imported, in one place. What you used before is offered first.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ the comparison ============ -->
+  <div class="band" id="compare">
+    <div class="wrap">
+      <div class="sec"><span class="n">02</span><h2>Two ways to make the same pack</h2></div>
+      <p class="band-lede">The second one is where the time goes.</p>
+      <div class="cols" style="margin-top:clamp(28px,4vw,52px)">
+        <div class="col">
+          <h3>In a spreadsheet</h3>
+          <ul>
+            <li>Open last season's file and save a copy</li>
+            <li>Hunt the flat across drives, Finder and a chat thread</li>
+            <li>Retype the size chart</li>
+            <li>Re-letter the bill of materials for the new colourway</li>
+            <li>Paste the logo and rebuild the header</li>
+            <li>Check nothing from the old style got left behind</li>
+            <li>Export, and fight the page breaks</li>
+          </ul>
+        </div>
+        <div class="col now">
+          <h3>In ModTech</h3>
+          <ul>
+            <li>Start from a brand you saved</li>
+            <li>Right-click the empty slot &mdash; what you used before is at the top</li>
+            <li>Pull the measurements from a size template</li>
+            <li>Change the colourway once; the linked rows follow</li>
+            <li>Pull whole pages across from the last pack</li>
+            <li>Export the PDF</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ right-click ============ -->
+  <div class="band band--deep" id="workflow">
+    <div class="wrap">
+      <div class="sec"><span class="n">03</span><h2>Right-click, not dig</h2></div>
+      <p class="band-lede">The flat you need is one you already drew.</p>
+      <p class="band-sub" style="margin-bottom:clamp(28px,4vw,52px)">Finding it again should not mean opening Finder, a drive, or a chat thread from last season.</p>
+      <div class="steps">
+        <figure class="step">
+          <svg viewBox="0 0 160 96" role="img" aria-label="An empty image slot on a techpack page, being right-clicked">
+            <rect x="8" y="8" width="144" height="80" fill="#181818" stroke="#4f4f4f" stroke-dasharray="4 4"/>
+            <path d="M66 40 l0 18 4 -5 3 6 3 -1 -3 -6 6 0z" fill="#f0f0f0"/>
+            <rect x="76" y="44" width="46" height="30" fill="#1f1f1f" stroke="#d33"/>
+            <rect x="81" y="50" width="30" height="3" fill="#555"/>
+            <rect x="81" y="57" width="36" height="3" fill="#555"/>
+            <rect x="81" y="64" width="24" height="3" fill="#555"/>
+          </svg>
+          <figcaption><span class="n">01</span> Right-click the empty slot</figcaption>
+        </figure>
+        <figure class="step">
+          <svg viewBox="0 0 160 96" role="img" aria-label="The picker, with previously used assets listed first">
+            <rect x="8" y="8" width="144" height="80" fill="#181818" stroke="#4f4f4f"/>
+            <rect x="16" y="16" width="128" height="14" fill="none" stroke="#d33"/>
+            <text x="22" y="26" font-family="IBM Plex Mono, monospace" font-size="8" fill="#ff4d4d">used before</text>
+            <rect x="16" y="36" width="128" height="10" fill="#2e2e2e"/>
+            <rect x="16" y="50" width="128" height="10" fill="#2e2e2e"/>
+            <rect x="16" y="64" width="128" height="10" fill="#2e2e2e"/>
+          </svg>
+          <figcaption><span class="n">02</span> What you used before is first</figcaption>
+        </figure>
+        <figure class="step">
+          <svg viewBox="0 0 160 96" role="img" aria-label="The chosen drawing placed in the techpack page">
+            <rect x="8" y="8" width="144" height="80" fill="#fff"/>
+            <g stroke="#1f1d1d" fill="#27388b" stroke-width="1">
+              <rect x="58" y="22" width="44" height="6"/>
+              <path d="M58 28 L54 78 L71 78 L75 48 L79 78 L96 78 L100 28 Z"/>
+            </g>
+          </svg>
+          <figcaption><span class="n">03</span> It lands in the pack</figcaption>
+        </figure>
+      </div>
+      <p class="note">Diagram, not a screenshot. Drag a file in from Finder, or paste a screenshot or artwork straight from your drawing program, and it joins the library for every pack after this one.</p>
+    </div>
+  </div>
+
+  <!-- ============ construction study ============ -->
+  <div class="band band--panel" id="study">
+    <div class="wrap">
+      <div class="sec"><span class="n">04</span><h2>Under the surface</h2></div>
+      <p class="band-lede">A pocket is four decisions and one stitch path.</p>
+      <p class="band-sub" style="margin-bottom:clamp(28px,4vw,52px)">The work that makes a garment is the work a techpack has to carry. This is a drawing, not a screen &mdash; it is the kind of thing ModTech exists to keep hold of.</p>
+
+      <figure class="study">
+        <svg viewBox="0 0 920 420" role="img" aria-label="A construction study of a square patch pocket. The pocket is drawn lifted away from the body panel along a straight axis, showing its folded top edge, the stitch path that attaches it, bar-tacks at the opening corners, and a cross-section through the finished join.">
+          <defs>
+            <marker id="arw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0 0 L10 5 L0 10 z" fill="#8c8c8c"/>
+            </marker>
+            <style>
+              .cut { fill: #171717; stroke: #ededed; stroke-width: 1.8; stroke-linejoin: miter; }
+              .stitch { fill: none; stroke: #ff4d4d; stroke-width: 1.6; stroke-dasharray: 7 5; }
+              .thin { fill: none; stroke: #8c8c8c; stroke-width: 1; }
+              .lbl { font-family: 'IBM Plex Mono', monospace; font-size: 11px; fill: #f0f0f0; letter-spacing: .1em; }
+              .sub { font-family: 'IBM Plex Mono', monospace; font-size: 10px; fill: #8c8c8c; letter-spacing: .04em; }
+              .red { font-family: 'IBM Plex Mono', monospace; font-size: 10px; fill: #ff4d4d; letter-spacing: .04em; }
+            </style>
+          </defs>
+
+          <!-- 01 the body panel, with the pocket's landing position on it -->
+          <text x="60" y="40" class="lbl">01 BODY PANEL</text>
+          <rect class="cut" x="60" y="56" width="280" height="290"/>
+          <path class="stitch" d="M125 130 V300 H275 V130"/>
+          <path class="thin" d="M125 130 H275" stroke-dasharray="2 4"/>
+          <g stroke="#ff4d4d" stroke-width="3.4">
+            <line x1="125" y1="131" x2="125" y2="145"/>
+            <line x1="275" y1="131" x2="275" y2="145"/>
+          </g>
+          <line class="thin" x1="86" y1="100" x2="86" y2="178" marker-start="url(#arw)" marker-end="url(#arw)"/>
+          <text x="74" y="92" class="sub">grain</text>
+          <path class="thin" d="M300 318 H352"/>
+          <text x="358" y="322" class="sub">cut edge of the panel</text>
+
+          <!-- the straight axis the pocket travels along, into its landing -->
+          <path class="thin" d="M414 152 L214 208" stroke-dasharray="4 5" marker-end="url(#arw)"/>
+
+          <!-- 02 the pocket piece, lifted away -->
+          <text x="424" y="40" class="lbl">02 POCKET</text>
+          <rect class="cut" x="424" y="56" width="150" height="172"/>
+          <path class="thin" d="M424 76 H574 M424 88 H574"/>
+          <path class="stitch" d="M424 82 H574"/>
+          <line class="thin" x1="412" y1="56" x2="412" y2="88" marker-start="url(#arw)" marker-end="url(#arw)"/>
+          <path class="thin" d="M406 56 H418 M406 88 H418"/>
+          <text x="366" y="86" text-anchor="end" class="sub">folded edge</text>
+          <text x="424" y="252" class="sub">turned under once, stitched down</text>
+
+          <!-- 03 a section through the finished join -->
+          <text x="650" y="136" class="lbl">03 THE JOIN</text>
+          <rect x="650" y="150" width="240" height="152" fill="#101010" stroke="#333"/>
+          <text x="664" y="172" class="sub">SECTION A&ndash;A</text>
+          <text x="748" y="212" class="sub">pocket</text>
+          <path d="M866 242 H706 a7 7 0 0 1 0 -14 H744" fill="none" stroke="#d8d8d8" stroke-width="9"/>
+          <path d="M666 268 H874" fill="none" stroke="#6a6a6a" stroke-width="11"/>
+          <path class="stitch" d="M790 224 V282" stroke-dasharray="5 4"/>
+          <text x="748" y="294" class="sub">panel</text>
+
+          <!-- key -->
+          <g>
+            <path class="stitch" d="M60 380 H96"/>
+            <text x="106" y="384" class="red">stitch path</text>
+            <line x1="212" y1="380" x2="248" y2="380" stroke="#ededed" stroke-width="1.8"/>
+            <text x="258" y="384" class="sub">cut boundary</text>
+            <line x1="378" y1="380" x2="378" y2="372" stroke="#ff4d4d" stroke-width="3.4"/>
+            <text x="392" y="384" class="sub">bar-tack</text>
+          </g>
+          <text x="890" y="384" text-anchor="end" class="sub">construction study &middot; not a production pattern</text>
+        </svg>
+        <figcaption>A square patch pocket, drawn away from the panel it sits on. Red is stitching, and only ever stitching.</figcaption>
+      </figure>
+    </div>
+  </div>
+
+  <!-- ============ why ============ -->
+  <div class="band" id="why">
+    <div class="wrap">
+      <div class="sec"><span class="n">05</span><h2>Why it exists</h2></div>
+      <blockquote>
+        <p>I spent a lot of time finding files in folders. Even when I knew the next techpack would share the same image, it was a circus just to locate it and get it into the pack. Do that across a thousand packs, with assets scattered over drives and cloud storage, and it adds up.</p>
+        <p>In a spreadsheet, a techpack was most of an afternoon. In ModTech a new style is a fraction of that, and a style I have already built is faster still &mdash; that is the part the modules pay for.</p>
+        <p>It is three years of production work turned into a tool: modular, so you build the next pack from the last one instead of from nothing.</p>
+        <cite>The production manager who built ModTech</cite>
+      </blockquote>
+    </div>
+  </div>
+
+  <!-- ============ specs ============ -->
+  <div class="band band--deep" id="specs">
+    <div class="wrap">
+      <div class="sec"><span class="n">06</span><h2>Specifications</h2></div>
+      <div class="kvs">
+        <div class="kv"><b>Platform</b><span>macOS, Apple Silicon</span></div>
+        <div class="kv"><b>Tested on</b><span>macOS 15.5</span></div>
+        <div class="kv"><b>Output</b><span>PDF, A4 landscape, cm</span></div>
+        <div class="kv"><b>Your files</b><span>stored on your Mac</span></div>
+        <div class="kv"><b>Network use</b><span>periodic licence check</span></div>
+        <div class="kv"><b>Seats</b><span>1 per Mac</span></div>
+      </div>
+
+      <h3 style="margin:clamp(32px,4vw,52px) 0 14px">Pages in a pack</h3>
+      <div class="pages">
+        <div class="page-row"><span class="n">01</span><span>Cover page</span></div>
+        <div class="page-row"><span class="n">02</span><span>Construction</span></div>
+        <div class="page-row"><span class="n">03</span><span>Colourways + BOM</span></div>
+        <div class="page-row"><span class="n">04</span><span>Trims &amp; labels</span></div>
+        <div class="page-row"><span class="n">05</span><span>Hardware</span></div>
+        <div class="page-row"><span class="n">06</span><span>Artwork</span></div>
+        <div class="page-row"><span class="n">07</span><span>Points of measure</span></div>
+        <div class="page-row"><span class="n">08</span><span>QC &amp; sign-off</span></div>
+        <div class="page-row"><span class="n">09</span><span>References</span></div>
+      </div>
+      <p class="note">Add stitching, hardware callouts, sample comments, a sample checklist or a blank page when a garment needs them. Every page puts the drawing first: full-page flats, numbered callouts on the detail they describe, and short label-and-value rows instead of a wall of text, so the sheet reads clearly wherever it is made.</p>
+    </div>
+  </div>
+
+  <!-- ============ price ============ -->
+  <div class="band" id="price">
+    <div class="wrap">
+      <div class="sec"><span class="n">07</span><h2>Price</h2></div>
+      <div class="price-card">
+        <p class="label">Price when subscriptions open</p>
+        <p class="amount">US$29<small> / month</small></p>
+        <ul>
+          <li>One seat, one Mac</li>
+          <li>Unlimited techpacks</li>
+          <li>Full library and right-click pull</li>
+          <li>PDF export</li>
+          <li>14-day money-back guarantee on your first payment</li>
+        </ul>
+      </div>
+      <!-- Kept on its own line: when the button opens, this sentence has to go, and the
+           guard refuses the phrase outright once gated is false. The pricing link below
+           must survive that removal, so it is a separate element. -->
+      <p class="note">Subscriptions are not open yet. Join the list below and we will tell you when they open.</p>
+      <p class="note">You can <a href="/pricing">see the pricing</a> in full. The pilot is the first paid group: the same US$29 a month and the same guarantee, with direct access to the person who built it.</p>
+    </div>
+  </div>
+
+  <!-- ============ questions ============ -->
+  <div class="band" id="questions">
+    <div class="wrap">
+      <div class="sec"><span class="n">08</span><h2>Questions</h2></div>
+      <div class="faq">
+        <details>
+          <summary><span class="n">01</span> What is a techpack?</summary>
+          <div class="a">The document a factory works from: drawings, measurements, materials, trims, colourways and artwork for one garment. ModTech builds it and exports it as a PDF.</div>
+        </details>
+        <details>
+          <summary><span class="n">02</span> What does modular mean here?</summary>
+          <div class="a">Your brand, pages, size templates, colourways and asset library are kept outside any one pack, so the next pack is assembled from them rather than retyped. Change a colourway and the bill-of-materials rows and artwork that reference it follow. Drawings are images you place, so changing a colourway does not redraw them.</div>
+        </details>
+        <details>
+          <summary><span class="n">03</span> Mac only?</summary>
+          <div class="a">Yes. ModTech is a Mac app for Apple Silicon, tested on macOS 15.5. There is no Windows version.</div>
+        </details>
+        <details>
+          <summary><span class="n">04</span> Where are my files kept?</summary>
+          <div class="a">On your Mac. Your library and packs are stored locally and are not uploaded to us. ModTech does reach our licence service from time to time to confirm your subscription, so it needs an internet connection to keep editing. Feedback is sent only if you choose to send it.</div>
+        </details>
+        <details>
+          <summary><span class="n">05</span> Can my team use it?</summary>
+          <div class="a">One seat covers one Mac, and each person keeps their own library. There is no shared team library yet. Leaving ModTech closed never costs you your seat &mdash; a Mac only loses its seat when a different Mac activates and the old one has not checked in for 14 days. Moving to a new Mac costs nothing and needs no new subscription, and if you need the seat sooner, email us and we will free it.</div>
+        </details>
+        <details>
+          <summary><span class="n">06</span> What happens if I cancel?</summary>
+          <div class="a">You keep full access until the end of the period you paid for, plus a 7-day grace period. After that ModTech becomes read-only: you can still open your library and export your packs as PDF. Your work stays on your Mac, exactly as you left it. A refund works differently &mdash; it cancels the subscription straight away. See the <a href="/refunds">refund policy</a>.</div>
+        </details>
+        <details>
+          <summary><span class="n">07</span> When does it open?</summary>
+          <div class="a">We are not naming a date. Join the list and you will hear when it does.</div>
+        </details>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ join ============ -->
+  <div class="band band--panel" id="join">
+    <div class="wrap">
+      <div class="sec"><span class="n">09</span><h2>Be told when it opens</h2></div>
+      <p class="band-lede">Stop rebuilding the same pack from scratch.</p>
+      <form class="wl" id="waitlist-foot" method="post" novalidate style="margin-top:24px">
+        <label for="wl2-email">Your email</label>
+        <div class="row">
+          <input type="email" id="wl2-email" name="email" placeholder="you@yourbrand.com" autocomplete="email" required>
+          <button type="submit">Join the list</button>
+        </div>
+        <div class="hp" aria-hidden="true"><label for="wl2-ref">Reference</label><input type="text" id="wl2-ref" name="wl_ref" tabindex="-1" autocomplete="new-password"></div>
+        <p class="consent">We will email you when ModTech opens, and may invite you to the paid pilot. Nothing else, and every email has an unsubscribe. See the <a href="/privacy#waitlist">privacy policy</a>.</p>
+        <p class="status-msg" role="status" aria-live="polite"></p>
+        <noscript><p class="note">Email <a href="mailto:contact@modtech.app?subject=ModTech%20waitlist">contact@modtech.app</a> and we will add you.</p></noscript>
+      </form>
+    </div>
+  </div>
+
 </main>
+
 <footer class="site">
   <div class="wrap">
-    <div>&copy; 2026 Joseph Berhanu. ModTech.</div>
+    <div class="legal">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <svg width="16" height="16" viewBox="0 0 100 100" aria-hidden="true" focusable="false" style="color:var(--ink)"><g fill="currentColor"><polygon points="4,14 10,8 18,8 62,52 62,64 58,68 50,68 20,36 20,88 16,92 8,92 4,88"/><polygon points="38,17 46,8 90,8 96,14 96,20 90,26 46,26"/><polygon points="66,32 92,32 96,36 96,86 90,92 74,92 74,46 66,38"/></g></svg>
+        <b>MODTECH</b> <span>modular techpacks for mac</span>
+      </div>
+      &copy; 2026 ModTech. Business and contact details are in the <a href="/terms">Terms</a>.<br>
+      Payments by Paddle.com Market Limited, our Merchant of Record.<br>
+      <a href="mailto:contact@modtech.app">contact@modtech.app</a>
+    </div>
     <nav>
       <a href="/pricing">Pricing</a>
       <a href="/terms">Terms of Service</a>
@@ -51,5 +506,7 @@
     </nav>
   </div>
 </footer>
+<script src="/assets/waitlist-config.js?v=4"></script>
+<script src="/assets/waitlist.js?v=4"></script>
 </body>
 </html>

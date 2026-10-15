@@ -1,0 +1,6 @@
+# GitHub Pages serves this repo as-is. Everything listed here is build-time or
+# internal tooling and must not be published.
+exclude:
+  - tools/
+  - .claude/
+  - README.md

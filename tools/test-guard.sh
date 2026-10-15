@@ -59,7 +59,11 @@ restore() { # public-flip state: the held sentences back on four pages, the two 
   rm -f "$SD/pricing/index.html.bak" "$SD/index.html.bak"
   # and the agreement note plus the delivery paragraph in their live state (publish #1 replaces both with the paragraph "Subscriptions are
   # not open yet"): no time promise. Whatever the branch carries is removed first, so these tests hold on pricing-v2 and on publish-1 alike.
-  sed -i.bak -e '/^  <p class="note">By subscribing you agree/d' -e '/^  <p class="note">After you subscribe/d' -e '/^  <p class="note">Subscriptions are not open yet/d' "$SD/pricing/index.html"; rm -f "$SD/pricing/index.html.bak"
+  # The paused sentence is matched by its WORDS, not by the element it sits in: v2 carries it in the
+  # pricing lede and in the home page's price band as well as in the pricing note, and every one of
+  # them has to go when the button opens (the guard refuses the phrase outright once gated is false).
+  sed -i.bak -e '/^  <p class="note">By subscribing you agree/d' -e '/^  <p class="note">After you subscribe/d' -e '/Subscriptions are not open yet/d' "$SD/pricing/index.html"; rm -f "$SD/pricing/index.html.bak"
+  sed -i.bak -e '/Subscriptions are not open yet/d' "$SD/index.html"; rm -f "$SD/index.html.bak"
   echo '  <p class="note">By subscribing you agree to the <a href="/terms">Terms of Service</a> and the <a href="/refunds">Refund Policy</a>.</p>' >> "$SD/pricing/index.html"
   echo '  <p class="note">After you subscribe, your licence key is emailed to you automatically, usually within a few minutes, and your personal download link for the Mac app follows separately.</p>' >> "$SD/pricing/index.html"
 }

@@ -244,6 +244,23 @@ p { margin: 0 0 14px; }
 .price-card ul { list-style: none; margin: 14px 0 0; padding: 0; }
 .price-card li { font-size: 13px; color: var(--ink-2); padding: 7px 0; border-top: 1px solid var(--rule); }
 
+/* ---- billing cadence tiers ----------------------------------------------
+ * Three ways to pay for the same plan. Price and billing period are the
+ * only things that differ, so the feature list stays shared in a
+ * .price-card below rather than repeating in every tier.
+ */
+.tiers { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(12px, 2vw, 18px); max-width: 720px; margin: 0 0 clamp(20px, 2.6vw, 30px); }
+.tier { border: 1px solid var(--rule-strong); background: var(--panel); padding: clamp(16px, 2vw, 22px); }
+.tier--best { border-color: var(--accent-fill); background: var(--panel-2); }
+.tier-label { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); margin: 0 0 8px; display: flex; align-items: center; gap: 8px; }
+.tier-badge { font-family: var(--sans); font-size: 10px; font-weight: 700; letter-spacing: 0.04em; text-transform: none; color: var(--ground); background: var(--accent-fill); padding: 2px 6px; }
+.tier-amount { font-family: var(--mono); font-size: 24px; font-weight: 600; margin: 0 0 6px; }
+.tier-amount small { font-size: 12px; font-weight: 400; color: var(--ink-2); }
+.tier-note { font-size: 12px; color: var(--ink-2); margin: 0; line-height: 1.5; }
+@media (max-width: 560px) {
+  .tiers { grid-template-columns: 1fr; max-width: 440px; }
+}
+
 /* ---- waitlist form ----------------------------------------------------- */
 
 .wl { max-width: 520px; }

@@ -6,8 +6,18 @@
  * A page may carry more than one of these (the home page has one in the hero and one at the
  * foot), so every form.wl is wired, each with its own message line.
  *
+ * DOUBLE OPT-IN. Submitting adds nothing to the list: the server emails a link to the address
+ * and only clicking it joins. That is why the success message says to go and check the inbox
+ * rather than "you are on the list", which would be untrue for every single submission —
+ * including one where somebody typed a stranger's address.
+ *
+ * What is sent: the address, the two optional fields, the honeypot, and the ID of the consent
+ * wording shown above the button (not the wording itself — the server keeps the id, and the
+ * text it refers to lives in the repository). `source` is NOT sent: the server takes it from
+ * the request's own origin, so a caller cannot label their rows.
+ *
  * The only reply treated as success is one the function actually sent. A network error, a
- * 4xx or a 5xx says "not saved" — nobody is told they are on the list when they are not.
+ * 4xx or a 5xx says "not saved" — nobody is told to check an inbox nothing was sent to.
  */
 (function () {
   var cfg = window.MODTECH_WAITLIST;
@@ -61,6 +71,10 @@
         return el ? el.value : '';
       }
       var consent = form.querySelector('.consent');
+      // The ID of the wording, not the wording. If the attribute is ever missing the server
+      // refuses the submission, which is the right way round: better a visible failure than a
+      // row stored against a consent record nobody can reconstruct.
+      var consentVersion = consent ? (consent.getAttribute('data-consent-version') || '') : '';
 
       var body = {
         email: address,
@@ -70,12 +84,11 @@
         // never fills it. Named wl_ref in the markup — "company" would be a
         // plausible field for a password manager to autofill for a real visitor.
         honeypot: field('wl_ref'),
-        consent_text: consent ? consent.textContent.trim() : '',
-        source: 'modtech.app'
+        consent_version: consentVersion
       };
 
       if (btn) btn.disabled = true;
-      say('Adding you…', '');
+      say('Sending you a confirmation…', '');
 
       fetch(cfg.endpoint, {
         method: 'POST',
@@ -84,7 +97,9 @@
       }).then(function (res) {
         if (res.ok) {
           lock();
-          say('You are on the list. We will email you when ModTech opens.', 'ok');
+          // True in every branch the server answers 200 for, which is the point: a new
+          // address, one already pending, one already confirmed, and a bot all land here.
+          say('Check your email and click the link to confirm. If it does not arrive within a few minutes, email contact@modtech.app', 'ok');
           return;
         }
         if (btn) btn.disabled = false;

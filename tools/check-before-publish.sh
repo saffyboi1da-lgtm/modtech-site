@@ -66,6 +66,40 @@ for k in environment token priceId gated; do
   [ "$(cfgcount $k)" = 1 ] || fail "$mode: '$k' must appear exactly once in $cfg (found $(cfgcount $k))"
 done
 
+# ---- The waitlist switch -------------------------------------------------------------------------------------------
+# assets/waitlist-config.js holds the single line that decides whether this site collects personal data. Nothing else in
+# this guard looked at that file: a Supabase function URL is neither secret-shaped nor an unresolved placeholder, so a
+# one-character edit plus a push used to print "safe to publish" and start collecting strangers' addresses.
+# Switching the form on is not a config tweak. The notice sent to legal@paddle.com under MSA clause 9.5 on 17 Oct 2026
+# promises a SEPARATE written heads-up before "the waitlist starts collecting anything", so turning it on takes a second,
+# committed file that records the date that heads-up was sent. Two files, one commit, a record left behind.
+wcfg=assets/waitlist-config.js
+WMARKER=tools/WAITLIST-LIVE
+# The waitlist part of the privacy page: everything between the "The waitlist" heading and the next heading.
+wsection() { awk '/id="waitlist"/ { f = 1; next } f && /<h2/ { f = 0 } f' privacy/index.html 2>/dev/null; }
+wendpoint=""
+if [ ! -f "$wcfg" ]; then
+  fail "$wcfg is missing, so whether this site collects personal data cannot be determined"
+else
+  wn=$(grep -cE "^[[:space:]]*endpoint[[:space:]]*:" "$wcfg" 2>/dev/null); wn=${wn:-0}
+  if [ "$wn" != 1 ]; then
+    fail "'endpoint' must appear exactly once in $wcfg (found $wn): a later duplicate would win in JavaScript"
+  else
+    wendpoint=$(sed -nE "s/^[[:space:]]*endpoint[[:space:]]*:[[:space:]]*['\"]([^'\"]*)['\"].*/\1/p" "$wcfg" | head -1)
+    if [ -n "$wendpoint" ] && ! printf '%s' "$wendpoint" | grep -qE '^https://[a-z0-9]([a-z0-9-]*[a-z0-9])?\.supabase\.co/functions/v1/waitlist-join$'; then
+      fail "$wcfg: 'endpoint' must be either '' (the form off, visitors are pointed at the contact address) or exactly https://<project-ref>.supabase.co/functions/v1/waitlist-join — found $(shape "$wendpoint")"
+    fi
+  fi
+fi
+if [ -n "$wendpoint" ]; then
+  # The form is ON. Everything the public pages promise about it has to be true on this same commit.
+  [ -f "$WMARKER" ] || fail "the waitlist form is ON ($wcfg sets an endpoint) but $WMARKER does not exist. That switch is what the clause 9.5 notice calls 'the waitlist starts collecting': send Paddle the written heads-up first, then create $WMARKER recording the date it was sent, and commit both in one change"
+  wsection | grep -q 'Resend' || fail "the waitlist form is ON but the waitlist section of privacy/index.html does not name Resend: that page promises the sending provider 'will be named here before we use it to send you anything'"
+  wsection | grep -q 'will be named here before we use it' && fail "the waitlist form is ON but the waitlist section of privacy/index.html still says the sending provider 'will be named here before we use it to send you anything': name the provider and delete that sentence"
+else
+  [ ! -f "$WMARKER" ] || fail "$WMARKER exists but $wcfg sets no endpoint. A stale marker would silently authorise the next flip: delete it, or set the endpoint in the same change"
+fi
+
 # Git state. The guard reads the working tree, but a push publishes HEAD, so uncommitted changes make every other check unreliable.
 top=$(git rev-parse --show-toplevel 2>/dev/null)
 at_root=0

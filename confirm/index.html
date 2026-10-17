@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Confirm your email &mdash; ModTech</title>
+<!-- Not indexed, and not in the sitemap: this page is only ever reached from a link in one email. -->
+<meta name="robots" content="noindex,nofollow">
+<!-- The confirmation token is in the URL fragment. A fragment is never sent to a server, but a Referer
+     header could still carry the rest of the URL, so referrers are switched off outright and this page
+     loads nothing from anywhere else. -->
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#0e0e0e">
+<link rel="icon" href="/assets/mark.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="stylesheet" href="/assets/style.css?v=9">
+</head>
+<body>
+<header class="site">
+  <div class="wrap">
+    <a class="lockup" href="/">
+      <svg class="mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><g fill="currentColor"><polygon points="4,14 10,8 18,8 62,52 62,64 58,68 50,68 20,36 20,88 16,92 8,92 4,88"/><polygon points="38,17 46,8 90,8 96,14 96,20 90,26 46,26"/><polygon points="66,32 92,32 96,36 96,86 90,92 74,92 74,46 66,38"/></g></svg>
+      <b>MODTECH</b>
+      <span>modular techpacks for mac</span>
+    </a>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/pricing">Pricing</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="wrap hero">
+    <p class="status"><span class="dot" aria-hidden="true">&#9679;</span> Waitlist</p>
+    <h1>Confirm your email.</h1>
+
+    <!-- Nothing on this page writes anything until the button below is pressed. Mail scanners and corporate
+         gateways open the links in a message when it is delivered, so a link that confirmed on its own would
+         be clicked by a robot and the record would claim the real person had acted. -->
+    <div id="wl-confirm" hidden>
+      <p class="lede">Someone entered this email address on the ModTech waitlist. Press the button to confirm it is yours and join the list.</p>
+      <p><button type="button" id="wl-confirm-btn" class="btn">Confirm this address</button></p>
+      <p class="note">If it was not you, close this page. Nothing is added to the list, and the entry is deleted when the link expires.</p>
+    </div>
+
+    <div id="wl-done" hidden>
+      <p class="lede">Confirmed. You are on the waitlist.</p>
+      <p class="note">We will email you when ModTech opens, and we may invite you to the paid pilot. Nothing else, and every email has a way to unsubscribe. To be removed at any time, email <a href="mailto:contact@modtech.app">contact@modtech.app</a>.</p>
+    </div>
+
+    <div id="wl-expired" hidden>
+      <p class="lede">That link has expired.</p>
+      <p class="note">Confirmation links work for 72 hours, and the entry is deleted when one expires. Nothing was added to the list. You can <a href="/">sign up again</a> if you still want to be told when ModTech opens.</p>
+    </div>
+
+    <div id="wl-unknown" hidden>
+      <p class="lede">That link is not one of ours.</p>
+      <p class="note">It may have been retyped or cut short by an email program, or the entry may already have been deleted. Try opening the link from the email again, or <a href="/">sign up</a> from the home page.</p>
+    </div>
+
+    <div id="wl-error" hidden>
+      <p class="lede">Something went wrong at our end.</p>
+      <p class="note">Nothing was changed. Try again in a minute, or email <a href="mailto:contact@modtech.app">contact@modtech.app</a> and we will confirm you by hand.</p>
+    </div>
+
+    <div id="wl-nolink" hidden>
+      <p class="lede">This page needs the link from your email.</p>
+      <p class="note">Open the confirmation email and follow its link, in full. If you have not had one, <a href="/">sign up</a> from the home page, or email <a href="mailto:contact@modtech.app">contact@modtech.app</a>.</p>
+    </div>
+
+    <noscript>
+      <p class="lede">This page needs JavaScript to confirm your address.</p>
+      <p class="note">Email <a href="mailto:contact@modtech.app">contact@modtech.app</a> and we will confirm you by hand.</p>
+    </noscript>
+
+    <p class="status-msg" role="status" aria-live="polite"></p>
+  </div>
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <div class="legal">
+      &copy; 2026 ModTech.<br>
+      Payments by Paddle.com Market Limited, our Merchant of Record.<br>
+      <a href="mailto:contact@modtech.app">contact@modtech.app</a>
+    </div>
+    <nav>
+      <a href="/pricing">Pricing</a>
+      <a href="/terms">Terms of Service</a>
+      <a href="/privacy">Privacy Policy</a>
+      <a href="/refunds">Refund Policy</a>
+    </nav>
+  </div>
+</footer>
+<script src="/assets/waitlist-config.js?v=1"></script>
+<script src="/assets/confirm.js?v=1"></script>
+</body>
+</html>

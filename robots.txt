@@ -1,4 +1,6 @@
 User-agent: *
 Allow: /
+# Reached only from a link in one email, and it carries a confirmation token.
+Disallow: /confirm/
 
 Sitemap: https://modtech.app/sitemap.xml

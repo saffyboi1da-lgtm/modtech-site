@@ -475,6 +475,35 @@ fresh; config "'sandbox'" "'$GOODTOKEN'" "'$GOODPRICE'" true;           expect "
 fresh; config "''" "'$GOODTOKEN'" "'$GOODPRICE'" true;                  expect "live: an empty environment is described as nothing" 1 'found nothing'
 fresh; config "'live'" "'$GOODTOKEN'" "'$GOODPRICE'" true; echo "<p>within one business day</p>" >> "$SD/terms/index.html"; expect "live: the 'one business day' failure says this guard refuses that phrase" 1 'which this guard refuses'
 
+# ---- the waitlist switch: the one line that starts collecting personal data -------------------------------------
+# Before this block existed the guard said nothing whatever about assets/waitlist-config.js, so setting the endpoint
+# and pushing printed "safe to publish" while breaking a written undertaking to Paddle.
+WLURL="https://abcdefghijklmnopqrst.supabase.co/functions/v1/waitlist-join"
+wlcfg() { printf 'window.MODTECH_WAITLIST = {\n  endpoint: %s\n};\n' "$1" > "$SD/assets/waitlist-config.js"; }
+wlmarker() { echo "Written heads-up sent to Paddle on 2026-11-18." > "$SD/tools/WAITLIST-LIVE"; }
+# The privacy page as it now stands already names the sending provider in the waitlist section, so the on-state
+# passes as published. These two cases guard the REGRESSION: putting the "we will name it later" promise back, or
+# taking the provider's name out, while the form is collecting addresses.
+wlpromise() {
+  edit privacy/index.html 's#We send waitlist email through Resend, the provider named above#whichever provider eventually sends those emails will be named here before we use it to send you anything, and Resend#'
+}
+wlnoprovider() {
+  edit privacy/index.html 's#We send waitlist email through Resend, the provider named above#We send waitlist email through a provider#'
+}
+
+fresh; pconfig; wlcfg "''";                              expect_paused "the waitlist off (an empty endpoint, no marker) passes" 0 'safe to publish'
+fresh; pconfig; wlcfg "'$WLURL'";                        expect_paused "the endpoint set WITHOUT the marker file fails, and names the heads-up to Paddle" 1 'WAITLIST-LIVE does not exist'
+fresh; pconfig; wlcfg "'$WLURL'"; wlmarker;              expect_paused "the endpoint set, the marker committed and the provider already named passes" 0 'safe to publish'
+fresh; pconfig; wlcfg "'$WLURL'"; wlmarker; wlpromise;   expect_paused "putting the 'we will name the provider later' promise back while the form is ON fails" 1 'still says the sending provider'
+fresh; pconfig; wlcfg "'$WLURL'"; wlmarker; wlnoprovider; expect_paused "taking the provider's name out of the waitlist section while the form is ON fails" 1 'does not name Resend'
+fresh; pconfig; wlcfg "''"; wlmarker;                    expect_paused "a stale marker with the form off fails (it would silently authorise the next flip)" 1 'stale marker'
+fresh; pconfig; wlcfg "'https://evil.example.com/abcdefghijklmnopqrst.supabase.co/functions/v1/waitlist-join'"; wlmarker; expect_paused "a look-alike host that merely CONTAINS the supabase path fails" 1 "must be either ''"
+fresh; pconfig; wlcfg "'http://abcdefghijklmnopqrst.supabase.co/functions/v1/waitlist-join'"; wlmarker; expect_paused "a plain-http endpoint fails" 1 "must be either ''"
+fresh; pconfig; wlcfg "'$WLURL/../paddle-webhook'"; wlmarker; expect_paused "an endpoint pointing at another function fails" 1 "must be either ''"
+fresh; pconfig; printf 'window.MODTECH_WAITLIST = {\n  endpoint: %s,\n  endpoint: %s\n};\n' "''" "'$WLURL'" > "$SD/assets/waitlist-config.js"; expect_paused "a duplicate endpoint key fails (the later one would win in JavaScript)" 1 'exactly once'
+fresh; pconfig; rm -f "$SD/assets/waitlist-config.js";   expect_paused "a missing waitlist config fails rather than being skipped" 1 'is missing'
+fresh; pconfig; wlcfg "'$WLURL'"; wlmarker;              expect "the same waitlist rules apply in LIVE mode, not only paused" 1 'uncommitted|not open yet|Subscriptions'
+
 # ---- the guard and its tests hold no secret-shaped literal (their history is scanned, and so is every copy of their text) ----
 S=$(sed -n "s/^SECRETS='\(.*\)'$/\1/p" tools/check-before-publish.sh)
 if [ -z "$S" ]; then n="the SECRETS pattern could not be read"; else n=$(cat tools/check-before-publish.sh tools/test-guard.sh | sed "s/$SANDBOXPRICE//g" | G -cE "$S|live_[A-Za-z0-9]{27}|pri_[a-z0-9]{26}"); fi

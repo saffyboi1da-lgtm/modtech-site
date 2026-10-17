@@ -70,11 +70,11 @@
 
       <svg class="hero-art" viewBox="0 56 612 262" role="img" aria-label="A techpack sheet drawn abstractly, with five numbered leader lines labelling the modules it is assembled from: brand, pages, sizes, colourways and library.">
         <defs><style>
-          .hl{font-family:'IBM Plex Mono',monospace;font-size:10px;fill:#f0f0f0;letter-spacing:.1em}
-          .hn{font-family:'IBM Plex Mono',monospace;font-size:10px;fill:#ff4d4d}
+          .hl{font-family:'IBM Plex Mono',monospace;font-size:14px;fill:#f0f0f0;letter-spacing:.1em}
+          .hn{font-family:'IBM Plex Mono',monospace;font-size:14px;fill:#ff4d4d}
           .hs{font-family:'IBM Plex Mono',monospace;font-size:8px;fill:#8c8c8c}
           .ht{font-family:'IBM Plex Mono',monospace;font-size:6px;fill:#fff;letter-spacing:.12em}
-          .htd{font-family:'IBM Plex Mono',monospace;font-size:6px;fill:#777;letter-spacing:.06em}
+          .htd{font-family:'IBM Plex Mono',monospace;font-size:6px;fill:#666;letter-spacing:.06em}
           .ld{stroke:#4f4f4f;stroke-width:1;fill:none}
         </style></defs>
 
@@ -153,23 +153,23 @@
         <rect x="452" y="292" width="30" height="3" fill="#999"/>
 
         <g>
-          <text x="8" y="76" class="hn">01</text><text x="28" y="76" class="hl">BRAND</text>
+          <text x="8" y="76" class="hn">01</text><text x="32" y="76" class="hl">BRAND</text>
           <path class="ld" d="M104 72 H150 L169 73"/><circle cx="169" cy="73" r="2" fill="#d33"/>
         </g>
         <g>
-          <text x="8" y="140" class="hn">02</text><text x="28" y="140" class="hl">PAGES</text>
+          <text x="8" y="140" class="hn">02</text><text x="32" y="140" class="hl">PAGES</text>
           <path class="ld" d="M94 136 H128 L152 170"/><circle cx="152" cy="170" r="2" fill="#d33"/>
         </g>
         <g>
-          <text x="8" y="196" class="hn">03</text><text x="28" y="196" class="hl">SIZES</text>
+          <text x="8" y="196" class="hn">03</text><text x="32" y="196" class="hl">SIZES</text>
           <path class="ld" d="M88 192 H140 L167 186"/><circle cx="167" cy="186" r="2" fill="#d33"/>
         </g>
         <g>
-          <text x="8" y="252" class="hn">04</text><text x="28" y="252" class="hl">COLOURWAYS</text>
+          <text x="8" y="252" class="hn">04</text><text x="32" y="252" class="hl">COLOURWAYS</text>
           <path class="ld" d="M136 248 H152 L167 242"/><circle cx="167" cy="242" r="2" fill="#d33"/>
         </g>
         <g>
-          <text x="516" y="168" class="hn">05</text><text x="538" y="168" class="hl">LIBRARY</text>
+          <text x="516" y="168" class="hn">05</text><text x="540" y="168" class="hl">LIBRARY</text>
           <path class="ld" d="M512 164 H494 L452 160"/><circle cx="452" cy="160" r="2" fill="#d33"/>
         </g>
       </svg>
@@ -216,7 +216,7 @@
   <div class="band" id="compare">
     <div class="wrap">
       <div class="sec"><span class="n">02</span><h2>Two ways to make the same pack</h2></div>
-      <p class="band-lede">The second one is where the time goes.</p>
+      <p class="band-lede">Less rebuilding between styles.</p>
       <div class="cols" style="margin-top:clamp(28px,4vw,52px)">
         <div class="col">
           <h3>In a spreadsheet</h3>
@@ -296,7 +296,7 @@
       <p class="band-lede">A pocket is four decisions and one stitch path.</p>
       <p class="band-sub" style="margin-bottom:clamp(28px,4vw,52px)">The work that makes a garment is the work a techpack has to carry. This is a drawing, not a screen &mdash; it is the kind of thing ModTech exists to keep hold of.</p>
 
-      <figure class="study">
+      <figure class="study" role="group" aria-labelledby="study-cap">
         <svg viewBox="0 0 920 420" role="img" aria-label="A construction study of a square patch pocket. The pocket is drawn lifted away from the body panel along a straight axis, showing its folded top edge, the stitch path that attaches it, bar-tacks at the opening corners, and a cross-section through the finished join.">
           <defs>
             <marker id="arw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
@@ -336,7 +336,7 @@
           <path class="stitch" d="M424 82 H574"/>
           <line class="thin" x1="412" y1="56" x2="412" y2="88" marker-start="url(#arw)" marker-end="url(#arw)"/>
           <path class="thin" d="M406 56 H418 M406 88 H418"/>
-          <text x="366" y="86" text-anchor="end" class="sub">folded edge</text>
+          <text x="430" y="71" class="sub">folded edge</text>
           <text x="424" y="252" class="sub">turned under once, stitched down</text>
 
           <!-- 03 a section through the finished join -->
@@ -360,17 +360,17 @@
           </g>
           <text x="890" y="384" text-anchor="end" class="sub">construction study &middot; not a production pattern</text>
         </svg>
-        <figcaption>A square patch pocket, drawn away from the panel it sits on. Red is stitching, and only ever stitching.</figcaption>
+        <figcaption id="study-cap">A square patch pocket, drawn away from the panel it sits on. Red is stitching, and only ever stitching.<span class="pan-hint">&larr; Swipe sideways: panels 01 &middot; 02 &middot; 03 &rarr;</span></figcaption>
       </figure>
     </div>
   </div>
 
   <!-- ============ why ============ -->
-  <div class="band" id="why">
+  <div class="band band--tight" id="why">
     <div class="wrap">
       <div class="sec"><span class="n">05</span><h2>Why it exists</h2></div>
       <blockquote>
-        <p>I spent a lot of time finding files in folders. Even when I knew the next techpack would share the same image, it was a circus just to locate it and get it into the pack. Do that across a thousand packs, with assets scattered over drives and cloud storage, and it adds up.</p>
+        <p>I spent a lot of time finding files in folders. Even when I knew the next techpack would share the same image, it was a circus just to locate it and get it into the pack. Do that across about a thousand packs, with assets scattered over drives and cloud storage, and it adds up.</p>
         <p>In a spreadsheet, a techpack was most of an afternoon. In ModTech a new style is a fraction of that, and a style I have already built is faster still &mdash; that is the part the modules pay for.</p>
         <p>It is three years of production work turned into a tool: modular, so you build the next pack from the last one instead of from nothing.</p>
         <cite>The production manager who built ModTech</cite>
@@ -379,7 +379,7 @@
   </div>
 
   <!-- ============ specs ============ -->
-  <div class="band band--deep" id="specs">
+  <div class="band band--deep band--tight" id="specs">
     <div class="wrap">
       <div class="sec"><span class="n">06</span><h2>Specifications</h2></div>
       <div class="kvs">
@@ -408,7 +408,7 @@
   </div>
 
   <!-- ============ price ============ -->
-  <div class="band" id="price">
+  <div class="band band--tight" id="price">
     <div class="wrap">
       <div class="sec"><span class="n">07</span><h2>Price</h2></div>
       <div class="price-card">
@@ -431,7 +431,7 @@
   </div>
 
   <!-- ============ questions ============ -->
-  <div class="band" id="questions">
+  <div class="band band--tight" id="questions">
     <div class="wrap">
       <div class="sec"><span class="n">08</span><h2>Questions</h2></div>
       <div class="faq">
@@ -507,7 +507,7 @@
     </nav>
   </div>
 </footer>
-<script src="/assets/waitlist-config.js?v=4"></script>
-<script src="/assets/waitlist.js?v=4"></script>
+<script src="/assets/waitlist-config.js?v=5"></script>
+<script src="/assets/waitlist.js?v=5"></script>
 </body>
 </html>

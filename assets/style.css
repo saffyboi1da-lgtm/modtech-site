@@ -208,12 +208,16 @@ p { margin: 0 0 14px; }
   font-size: 14px; color: var(--ink-2); margin-top: 14px; max-width: 64ch;
 }
 
+.study:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.study .pan-hint { display: none; }
+
 /* Below ~700px the drawing would scale to the point its labels are ~4px tall. Stop
    downscaling and let the figure pan instead, so the annotations stay legible. */
 @media (max-width: 700px) {
   .study { overflow-x: auto; -webkit-overflow-scrolling: touch; }
   .study svg { width: 920px; max-width: none; }
   .study figcaption { position: sticky; left: 0; }
+  .study .pan-hint { display: block; margin-top: 6px; font-family: var(--mono); font-size: 12px; color: var(--accent); }
 }
 
 /* ---- key/value rows ---------------------------------------------------- */
@@ -238,7 +242,7 @@ p { margin: 0 0 14px; }
 /* ---- price card -------------------------------------------------------- */
 
 .price-card { border: 1px solid var(--rule-strong); background: var(--panel); padding: clamp(22px, 3vw, 34px); max-width: 440px; }
-.price-card .label { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3); }
+.label { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3); }
 .price-card .amount { font-family: var(--mono); font-size: 34px; font-weight: 600; margin: 8px 0 2px; }
 .price-card .amount small { font-size: 14px; font-weight: 400; color: var(--ink-2); }
 .price-card ul { list-style: none; margin: 14px 0 0; padding: 0; }
@@ -253,7 +257,7 @@ p { margin: 0 0 14px; }
 .tier { border: 1px solid var(--rule-strong); background: var(--panel); padding: clamp(16px, 2vw, 22px); }
 .tier--best { border-color: var(--accent-fill); background: var(--panel-2); }
 .tier-label { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); margin: 0 0 8px; display: flex; align-items: center; gap: 8px; }
-.tier-badge { font-family: var(--sans); font-size: 10px; font-weight: 700; letter-spacing: 0.04em; text-transform: none; color: var(--ground); background: var(--accent-fill); padding: 2px 6px; }
+.tier-badge { font-family: var(--sans); font-size: 10px; font-weight: 700; letter-spacing: 0.04em; text-transform: none; color: var(--ground); background: var(--accent); padding: 2px 6px; }
 .tier-amount { font-family: var(--mono); font-size: 24px; font-weight: 600; margin: 0 0 6px; }
 .tier-amount small { font-size: 12px; font-weight: 400; color: var(--ink-2); }
 .tier-note { font-size: 12px; color: var(--ink-2); margin: 0; line-height: 1.5; }
@@ -278,13 +282,13 @@ p { margin: 0 0 14px; }
 .wl .field { flex: 1 1 220px; min-width: 0; }
 .wl .field label { font-size: 11px; color: var(--ink-3); }
 .wl .field input { width: 100%; }
-.wl button {
+.wl button, .btn {
   font: 700 12px/1 var(--sans); letter-spacing: 0.08em; text-transform: uppercase;
   background: var(--ink); color: var(--ground); border: 1px solid var(--ink);
   padding: 12px 18px; cursor: pointer;
 }
-.wl button:hover:not(:disabled) { background: #fff; }
-.wl button:disabled { opacity: 0.45; cursor: default; }
+.wl button:hover:not(:disabled), .btn:hover:not(:disabled) { background: #fff; }
+.wl button:disabled, .btn:disabled { opacity: 0.45; cursor: default; }
 .wl .optional { margin-top: 8px; }
 .wl .consent { font-size: 12px; color: var(--ink-3); margin: 10px 0 0; }
 .wl .consent a { color: var(--ink-2); }
@@ -327,6 +331,11 @@ blockquote {
 }
 blockquote p { margin: 0 0 18px; }
 blockquote cite { display: block; margin-top: 4px; font-family: var(--mono); font-size: 12px; color: var(--ink-3); font-style: normal; letter-spacing: 0.04em; }
+
+/* ---- pricing sections: same rhythm as the homepage bands, and a readable measure ---- */
+main > .wrap > section + section { margin-top: clamp(48px, 6vw, 88px); }
+main > .wrap > section:last-child { margin-bottom: clamp(56px, 7vw, 96px); }
+#before li, #billing p, #guarantee p { max-width: 60ch; }
 
 /* ---- note -------------------------------------------------------------- */
 

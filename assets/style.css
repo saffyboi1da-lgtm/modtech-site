@@ -336,6 +336,7 @@ blockquote cite { display: block; margin-top: 4px; font-family: var(--mono); fon
 main > .wrap > section + section { margin-top: clamp(48px, 6vw, 88px); }
 main > .wrap > section:last-child { margin-bottom: clamp(56px, 7vw, 96px); }
 #before li, #billing p, #guarantee p { max-width: 60ch; }
+#plan > .note { margin-bottom: 24px; max-width: 60ch; }
 
 /* ---- note -------------------------------------------------------------- */
 

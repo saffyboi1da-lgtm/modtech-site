@@ -480,7 +480,9 @@ fresh; config "'live'" "'$GOODTOKEN'" "'$GOODPRICE'" true; echo "<p>within one b
 # and pushing printed "safe to publish" while breaking a written undertaking to Paddle.
 WLURL="https://abcdefghijklmnopqrst.supabase.co/functions/v1/waitlist-join"
 wlcfg() { printf 'window.MODTECH_WAITLIST = {\n  endpoint: %s\n};\n' "$1" > "$SD/assets/waitlist-config.js"; }
-wlmarker() { echo "Written heads-up sent to Paddle on 2026-11-18." > "$SD/tools/WAITLIST-LIVE"; }
+wlmarker() { printf 'Written heads-up sent to Paddle on 2026-11-18.\npurge-job-verified: 2026-11-19\n' > "$SD/tools/WAITLIST-LIVE"; }
+# With the form ON the privacy page must stop saying the form is off.
+wlon() { edit privacy/index.html 's#The sign-up form on this website is not switched on yet#The sign-up form on this website is on#'; }
 # The privacy page as it now stands already names the sending provider in the waitlist section, so the on-state
 # passes as published. These two cases guard the REGRESSION: putting the "we will name it later" promise back, or
 # taking the provider's name out, while the form is collecting addresses.
@@ -493,10 +495,14 @@ wlnoprovider() {
 
 fresh; pconfig; wlcfg "''";                              expect_paused "the waitlist off (an empty endpoint, no marker) passes" 0 'safe to publish'
 fresh; pconfig; wlcfg "'$WLURL'";                        expect_paused "the endpoint set WITHOUT the marker file fails, and names the heads-up to Paddle" 1 'WAITLIST-LIVE does not exist'
-fresh; pconfig; wlcfg "'$WLURL'"; wlmarker;              expect_paused "the endpoint set, the marker committed and the provider already named passes" 0 'safe to publish'
-fresh; pconfig; wlcfg "'$WLURL'"; wlmarker; wlpromise;   expect_paused "putting the 'we will name the provider later' promise back while the form is ON fails" 1 'still says the sending provider'
-fresh; pconfig; wlcfg "'$WLURL'"; wlmarker; wlnoprovider; expect_paused "taking the provider's name out of the waitlist section while the form is ON fails" 1 'does not name Resend'
+fresh; pconfig; wlcfg "'$WLURL'"; wlmarker; wlon;        expect_paused "the endpoint set, the marker committed, the provider named and the off-state sentence gone passes" 0 'safe to publish'
+fresh; pconfig; wlcfg "'$WLURL'"; wlmarker; wlon; wlpromise; expect_paused "putting the 'we will name the provider later' promise back while the form is ON fails" 1 'still says the sending provider'
+fresh; pconfig; wlcfg "'$WLURL'"; wlmarker; wlon; wlnoprovider; expect_paused "taking the provider's name out of the waitlist section while the form is ON fails" 1 'does not name Resend'
 fresh; pconfig; wlcfg "''"; wlmarker;                    expect_paused "a stale marker with the form off fails (it would silently authorise the next flip)" 1 'stale marker'
+fresh; pconfig; wlcfg "'$WLURL'"; wlon; echo "Written heads-up sent to Paddle on 2026-11-18." > "$SD/tools/WAITLIST-LIVE"; expect_paused "the form ON with a marker that lacks the purge-job-verified line fails" 1 'purge-job-verified'
+fresh; pconfig; wlcfg "'$WLURL'"; wlon; printf 'Written heads-up sent to Paddle on 2026-11-18.\npurge-job-verified: soon\n' > "$SD/tools/WAITLIST-LIVE"; expect_paused "a purge-job-verified line that is not a date fails" 1 'purge-job-verified'
+fresh; pconfig; wlcfg "'$WLURL'"; wlmarker;              expect_paused "the form ON while the privacy page still says it is not switched on fails" 1 'not switched on yet'
+fresh; pconfig; wlcfg "''"; wlon;                        expect_paused "the form OFF while the privacy page no longer says so fails" 1 'does not say so'
 fresh; pconfig; wlcfg "'https://evil.example.com/abcdefghijklmnopqrst.supabase.co/functions/v1/waitlist-join'"; wlmarker; expect_paused "a look-alike host that merely CONTAINS the supabase path fails" 1 "must be either ''"
 fresh; pconfig; wlcfg "'http://abcdefghijklmnopqrst.supabase.co/functions/v1/waitlist-join'"; wlmarker; expect_paused "a plain-http endpoint fails" 1 "must be either ''"
 fresh; pconfig; wlcfg "'$WLURL/../paddle-webhook'"; wlmarker; expect_paused "an endpoint pointing at another function fails" 1 "must be either ''"

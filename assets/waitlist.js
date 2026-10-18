@@ -7,17 +7,18 @@
  * foot), so every form.wl is wired, each with its own message line.
  *
  * DOUBLE OPT-IN. Submitting adds nothing to the list: the server emails a link to the address
- * and only clicking it joins. That is why the success message says to go and check the inbox
- * rather than "you are on the list", which would be untrue for every single submission —
- * including one where somebody typed a stranger's address.
+ * and only clicking it joins. That is why the success message never says "you are on the list"
+ * (untrue for every single submission, including one where somebody typed a stranger's address)
+ * and never says that an email was sent (see the 200 branch below).
  *
  * What is sent: the address, the two optional fields, the honeypot, and the ID of the consent
  * wording shown above the button (not the wording itself — the server keeps the id, and the
  * text it refers to lives in the repository). `source` is NOT sent: the server takes it from
  * the request's own origin, so a caller cannot label their rows.
  *
- * The only reply treated as success is one the function actually sent. A network error, a
- * 4xx or a 5xx says "not saved" — nobody is told to check an inbox nothing was sent to.
+ * The only reply treated as success is a 200. A network error, a 4xx or a 5xx says "not saved".
+ * A 200 does not always mean mail was sent (opted out, already confirmed, one sent in the last
+ * 24 hours, capped), and the page must not reveal which, so the success line is conditional.
  */
 (function () {
   var cfg = window.MODTECH_WAITLIST;
@@ -88,7 +89,7 @@
       };
 
       if (btn) btn.disabled = true;
-      say('Sending you a confirmation…', '');
+      say('Sending…', '');
 
       fetch(cfg.endpoint, {
         method: 'POST',
@@ -97,9 +98,10 @@
       }).then(function (res) {
         if (res.ok) {
           lock();
-          // True in every branch the server answers 200 for, which is the point: a new
-          // address, one already pending, one already confirmed, and a bot all land here.
-          say('Check your email and click the link to confirm. If it does not arrive within a few minutes, email contact@modtech.app', 'ok');
+          // Shown for EVERY 200, including the branches where no mail goes out (opted out, already confirmed,
+          // sent one in the last 24 hours, capped, honeypot). The page must not reveal which, so this one line
+          // has to stay conditional: it never says an email was sent.
+          say('If this address can be confirmed, a link is on its way. Click it to confirm. If nothing arrives within a few minutes, check your spam folder or email contact@modtech.app', 'ok');
           return;
         }
         if (btn) btn.disabled = false;

@@ -94,9 +94,16 @@ fi
 if [ -n "$wendpoint" ]; then
   # The form is ON. Everything the public pages promise about it has to be true on this same commit.
   [ -f "$WMARKER" ] || fail "the waitlist form is ON ($wcfg sets an endpoint) but $WMARKER does not exist. That switch is what the clause 9.5 notice calls 'the waitlist starts collecting': send Paddle the written heads-up first, then create $WMARKER recording the date it was sent, and commit both in one change"
+  # The marker also records that the scheduled clean-up was SEEN to remove a test entry (runbook section 13 step 6). The
+  # guard cannot see the database, so this is an attestation, but a missing line stops a same-day flip.
+  if [ -f "$WMARKER" ]; then
+    grep -qE '^purge-job-verified: [0-9]{4}-[0-9]{2}-[0-9]{2}[[:space:]]*$' "$WMARKER" || fail "the waitlist form is ON but $WMARKER has no 'purge-job-verified: YYYY-MM-DD' line. The privacy page says unconfirmed entries are removed by a daily clean-up; that is only true once the scheduled job has been seen to run (docs/LICENSE_BACKEND_RUNBOOK.md section 13 step 6): record the day you saw it"
+  fi
+  grep -q 'The sign-up form on this website is not switched on yet' privacy/index.html && fail "the waitlist form is ON but privacy/index.html still says 'The sign-up form on this website is not switched on yet': delete that sentence in the same change"
   wsection | grep -q 'Resend' || fail "the waitlist form is ON but the waitlist section of privacy/index.html does not name Resend: that page promises the sending provider 'will be named here before we use it to send you anything'"
   wsection | grep -q 'will be named here before we use it' && fail "the waitlist form is ON but the waitlist section of privacy/index.html still says the sending provider 'will be named here before we use it to send you anything': name the provider and delete that sentence"
 else
+  grep -q 'The sign-up form on this website is not switched on yet' privacy/index.html 2>/dev/null || fail "the waitlist form is OFF but privacy/index.html does not say so: the page describes the sign-up form, its emails and its clean-up as if they ran, so it must open the waitlist section with 'The sign-up form on this website is not switched on yet'"
   [ ! -f "$WMARKER" ] || fail "$WMARKER exists but $wcfg sets no endpoint. A stale marker would silently authorise the next flip: delete it, or set the endpoint in the same change"
 fi
 

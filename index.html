@@ -51,7 +51,7 @@
         <p class="lede">Your brand, your pages, your sizes, your colourways, your library &mdash; made once, kept outside any one pack. Assemble the next techpack from them instead of retyping it, then export the PDF your factory reads.</p>
         <p class="hero-proof">Built by a production manager who has made about a thousand of them. His estimate: most of an afternoon in a spreadsheet, a fraction of that here &mdash; and a style he has already built is faster again.</p>
 
-        <form class="wl" id="waitlist" method="post" novalidate>
+        <form class="wl" id="waitlist" method="post" novalidate onsubmit="return false">
           <label for="wl-email">Be told when it opens.</label>
           <div class="row">
             <input type="email" id="wl-email" name="email" placeholder="you@yourbrand.com" autocomplete="email" required>
@@ -453,7 +453,7 @@
         </details>
         <details>
           <summary><span class="n">05</span> Can my team use it?</summary>
-          <div class="a">One seat covers one Mac, and each person keeps their own library. There is no shared team library yet. Leaving ModTech closed never costs you your seat &mdash; a Mac only loses its seat when a different Mac activates and the old one has not checked in for at least 14 days. Moving to a new Mac costs nothing and needs no new subscription, and if you need the seat sooner, email us and we will free it.</div>
+          <div class="a">One seat covers one Mac, and each person keeps their own library. There is no shared team library yet. Leaving ModTech closed does not cost you your seat by itself: a Mac only loses its seat when a different Mac activates and the old one has not checked in for at least 14 days. Moving to a new Mac costs nothing and needs no new subscription, and if you need the seat sooner, email us and we will free it.</div>
         </details>
         <details>
           <summary><span class="n">06</span> What happens if I cancel?</summary>
@@ -472,7 +472,7 @@
     <div class="wrap">
       <div class="sec"><span class="n">09</span><h2>Be told when it opens</h2></div>
       <p class="band-lede">Stop rebuilding the same pack from scratch.</p>
-      <form class="wl" id="waitlist-foot" method="post" novalidate style="margin-top:24px">
+      <form class="wl" id="waitlist-foot" method="post" novalidate onsubmit="return false" style="margin-top:24px">
         <label for="wl2-email">Your email</label>
         <div class="row">
           <input type="email" id="wl2-email" name="email" placeholder="you@yourbrand.com" autocomplete="email" required>

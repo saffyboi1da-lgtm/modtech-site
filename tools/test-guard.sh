@@ -482,7 +482,7 @@ WLURL="https://abcdefghijklmnopqrst.supabase.co/functions/v1/waitlist-join"
 wlcfg() { printf 'window.MODTECH_WAITLIST = {\n  endpoint: %s\n};\n' "$1" > "$SD/assets/waitlist-config.js"; }
 wlmarker() { printf 'Written heads-up sent to Paddle on 2026-11-18.\npurge-job-verified: 2026-11-19\n' > "$SD/tools/WAITLIST-LIVE"; }
 # With the form ON the privacy page must stop saying the form is off.
-wlon() { edit privacy/index.html 's#The sign-up form on this website is not switched on yet#The sign-up form on this website is on#'; }
+wlon() { edit privacy/index.html 's#id="waitlist-off-notice"#id="waitlist-gone"#'; }
 # The privacy page as it now stands already names the sending provider in the waitlist section, so the on-state
 # passes as published. These two cases guard the REGRESSION: putting the "we will name it later" promise back, or
 # taking the provider's name out, while the form is collecting addresses.
@@ -501,7 +501,9 @@ fresh; pconfig; wlcfg "'$WLURL'"; wlmarker; wlon; wlnoprovider; expect_paused "t
 fresh; pconfig; wlcfg "''"; wlmarker;                    expect_paused "a stale marker with the form off fails (it would silently authorise the next flip)" 1 'stale marker'
 fresh; pconfig; wlcfg "'$WLURL'"; wlon; echo "Written heads-up sent to Paddle on 2026-11-18." > "$SD/tools/WAITLIST-LIVE"; expect_paused "the form ON with a marker that lacks the purge-job-verified line fails" 1 'purge-job-verified'
 fresh; pconfig; wlcfg "'$WLURL'"; wlon; printf 'Written heads-up sent to Paddle on 2026-11-18.\npurge-job-verified: soon\n' > "$SD/tools/WAITLIST-LIVE"; expect_paused "a purge-job-verified line that is not a date fails" 1 'purge-job-verified'
+fresh; pconfig; wlcfg "'$WLURL'"; wlon; printf 'Written heads-up sent to Paddle on 2026-11-18.\npurge-job-verified: 2026-13-45\n' > "$SD/tools/WAITLIST-LIVE"; expect_paused "an impossible purge-job-verified date (month 13) fails" 1 'purge-job-verified'
 fresh; pconfig; wlcfg "'$WLURL'"; wlmarker;              expect_paused "the form ON while the privacy page still says it is not switched on fails" 1 'not switched on yet'
+fresh; pconfig; wlcfg '`'"$WLURL"'`'; wlmarker; wlon;    expect_paused "an endpoint written as a backtick string is refused, not read as OFF" 1 'plain quoted string'
 fresh; pconfig; wlcfg "''"; wlon;                        expect_paused "the form OFF while the privacy page no longer says so fails" 1 'does not say so'
 fresh; pconfig; wlcfg "'https://evil.example.com/abcdefghijklmnopqrst.supabase.co/functions/v1/waitlist-join'"; wlmarker; expect_paused "a look-alike host that merely CONTAINS the supabase path fails" 1 "must be either ''"
 fresh; pconfig; wlcfg "'http://abcdefghijklmnopqrst.supabase.co/functions/v1/waitlist-join'"; wlmarker; expect_paused "a plain-http endpoint fails" 1 "must be either ''"

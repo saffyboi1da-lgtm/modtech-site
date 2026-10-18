@@ -85,6 +85,10 @@ else
   if [ "$wn" != 1 ]; then
     fail "'endpoint' must appear exactly once in $wcfg (found $wn): a later duplicate would win in JavaScript"
   else
+    # The ON/OFF decision below reads the value with a regex that needs a quote straight after the colon. A backtick string or a
+    # parenthesised value would be read as OFF here while the browser still POSTs to it, so any shape but a plain quoted
+    # string is refused outright (fail closed) instead of being guessed at.
+    grep -qE "^[[:space:]]*endpoint[[:space:]]*:[[:space:]]*(''|\"\"|'[^']*'|\"[^\"]*\"),?[[:space:]]*$" "$wcfg" || fail "$wcfg: the 'endpoint' line must be a plain quoted string ('' or \"\" or '...' or \"...\") and nothing else on the line, so that whether the form is on can be read reliably"
     wendpoint=$(sed -nE "s/^[[:space:]]*endpoint[[:space:]]*:[[:space:]]*['\"]([^'\"]*)['\"].*/\1/p" "$wcfg" | head -1)
     if [ -n "$wendpoint" ] && ! printf '%s' "$wendpoint" | grep -qE '^https://[a-z0-9]([a-z0-9-]*[a-z0-9])?\.supabase\.co/functions/v1/waitlist-join$'; then
       fail "$wcfg: 'endpoint' must be either '' (the form off, visitors are pointed at the contact address) or exactly https://<project-ref>.supabase.co/functions/v1/waitlist-join — found $(shape "$wendpoint")"
@@ -97,13 +101,13 @@ if [ -n "$wendpoint" ]; then
   # The marker also records that the scheduled clean-up was SEEN to remove a test entry (runbook section 13 step 6). The
   # guard cannot see the database, so this is an attestation, but a missing line stops a same-day flip.
   if [ -f "$WMARKER" ]; then
-    grep -qE '^purge-job-verified: [0-9]{4}-[0-9]{2}-[0-9]{2}[[:space:]]*$' "$WMARKER" || fail "the waitlist form is ON but $WMARKER has no 'purge-job-verified: YYYY-MM-DD' line. The privacy page says unconfirmed entries are removed by a daily clean-up; that is only true once the scheduled job has been seen to run (docs/LICENSE_BACKEND_RUNBOOK.md section 13 step 6): record the day you saw it"
+    grep -qE '^purge-job-verified: 20[0-9]{2}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])[[:space:]]*$' "$WMARKER" || fail "the waitlist form is ON but $WMARKER has no 'purge-job-verified: YYYY-MM-DD' line. The privacy page says unconfirmed entries are removed by a daily clean-up; that is only true once the scheduled job has been seen to run (docs/LICENSE_BACKEND_RUNBOOK.md section 13 step 6): record the day you saw it"
   fi
-  grep -q 'The sign-up form on this website is not switched on yet' privacy/index.html && fail "the waitlist form is ON but privacy/index.html still says 'The sign-up form on this website is not switched on yet': delete that sentence in the same change"
+  grep -q 'id="waitlist-off-notice"' privacy/index.html && fail "the waitlist form is ON but privacy/index.html still carries the opening paragraph that says 'The sign-up form on this website is not switched on yet' (id waitlist-off-notice): delete that whole paragraph in the same change"
   wsection | grep -q 'Resend' || fail "the waitlist form is ON but the waitlist section of privacy/index.html does not name Resend: that page promises the sending provider 'will be named here before we use it to send you anything'"
   wsection | grep -q 'will be named here before we use it' && fail "the waitlist form is ON but the waitlist section of privacy/index.html still says the sending provider 'will be named here before we use it to send you anything': name the provider and delete that sentence"
 else
-  grep -q 'The sign-up form on this website is not switched on yet' privacy/index.html 2>/dev/null || fail "the waitlist form is OFF but privacy/index.html does not say so: the page describes the sign-up form, its emails and its clean-up as if they ran, so it must open the waitlist section with 'The sign-up form on this website is not switched on yet'"
+  grep -q 'id="waitlist-off-notice"' privacy/index.html 2>/dev/null || fail "the waitlist form is OFF but privacy/index.html does not say so: the page describes the sign-up form, its emails and its clean-up as if they ran, so it must open the waitlist section with the paragraph (id waitlist-off-notice) that says 'The sign-up form on this website is not switched on yet'"
   [ ! -f "$WMARKER" ] || fail "$WMARKER exists but $wcfg sets no endpoint. A stale marker would silently authorise the next flip: delete it, or set the endpoint in the same change"
 fi
 

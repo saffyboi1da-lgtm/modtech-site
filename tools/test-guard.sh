@@ -7,10 +7,28 @@
 # itself; the invalid-UTF-8 cases start it from a UTF-8 caller on purpose, and this file's own checks run in the C locale.
 # No secret-shaped literal sits in this file: every fake token, price id and secret is built at run time (GOODTOKEN, GOODPRICE and
 # fake() below), because the unpushed history of a publish contains this file and the guard scans that history for them.
+# The same goes for the held business-name operator wording: this file never holds its two words together (HELD below is built at run time).
+# The guard reads today's date from `date`. A stand-in `date` is put first on PATH (FAKE_TODAY, default 2026-12-31, after every date floor),
+# so the suite gives the same answers on any day; a case that tests a date sets FAKE_TODAY for that one run.
+# The suite does not care which website the checkout holds: every scratch copy starts as the modtech.app variant (fresh), and the
+# modtechstudios.com variant is made from it (studios). The last block runs the guard on the tree exactly as checked out.
 cd "$(dirname "$0")/.." || exit 2
 T=$(mktemp -d); T=$(cd "$T" && pwd -P); trap 'rm -rf "$T"' EXIT
 export GIT_CEILING_DIRECTORIES="$T"   # a scratch copy that is not a git repo must never find a repo above it
 SD="$T/s"                              # the scratch copy the guard runs in
+REALDATE=$(command -v date)
+mkdir -p "$T/dateshim"
+cat > "$T/dateshim/date" <<SHIM
+#!/bin/bash
+if [ "\$*" = "+%F" ]; then
+  [ -n "\$FAKE_DATE_LOG" ] && printf 'TZ=%s\n' "\$TZ" >> "\$FAKE_DATE_LOG"
+  [ "\${FAKE_TODAY-}" = FAIL ] && exit 1
+  printf '%s\n' "\${FAKE_TODAY-2026-12-31}"
+else exec $REALDATE "\$@"; fi
+SHIM
+chmod +x "$T/dateshim/date"
+export FAKE_TODAY=2026-12-31
+export PATH="$T/dateshim:$PATH"
 GOODTOKEN=live_$(printf 'a%.0s' $(seq 1 27))   # fake: live_ + 27 characters, built at run time so this file never holds a live-shaped string
 GOODPRICE=pri_$(printf 'b%.0s' $(seq 1 26))    # fake: pri_ + 26 characters, built at run time for the same reason
 SANDBOXPRICE=pri_01m4k1ncbjqap9ppqre6mnbef6    # the public sandbox price id (the guard excludes it from the history scan by value)
@@ -37,7 +55,23 @@ fails=0
 G() { LC_ALL=C grep "$@"; }   # this file's own greps run in the C locale, so a guard line holding an invalid UTF-8 byte is still matched
 genv() { env ${GLOC:+LC_ALL=$GLOC} ${GPATH:+PATH=$GPATH} "$@"; }   # GLOC / GPATH: a per-case locale or PATH for the guard
 why() { [ -n "$GUARD_TEST_VERBOSE" ] && printf '%s\n' "$out" | G -E -m3 '^(FAIL|usage|NOTE)' | cut -c1-150 | sed 's/^/          /'; return 0; }
-fresh() { rm -rf "$SD"; mkdir "$SD"; rsync -a --exclude .git ./ "$SD/"; find "$SD" -name '*.html' -exec perl -pi -e 's/\[\[.*?\]\]//g' {} +; }
+swaphost() { # swaphost FROM TO: moves the scratch copy from one website to the other, construct by construct (CNAME, canonical and og tags, sitemap, robots, the host labels, the 404 sentence). The contact address is not a host and never moves.
+  FROMH=$1 TOH=$2 perl -pi -e 's#https://\Q$ENV{FROMH}\E/#https://$ENV{TOH}/#g; s#<span>\Q$ENV{FROMH}\E</span>#<span>$ENV{TOH}</span>#g; s#exist on \Q$ENV{FROMH}\E#exist on $ENV{TOH}#g' "$SD/robots.txt" "$SD/sitemap.xml" $(find "$SD" -name '*.html')
+  printf '%s' "$2" > "$SD/CNAME"   # same byte shape as the original: the host, no trailing newline
+}
+studios() { swaphost modtech.app modtechstudios.com; }
+to_app() { [ "$(cat "$SD/CNAME")" = modtechstudios.com ] && swaphost modtechstudios.com modtech.app; true; }
+rawfresh() { rm -rf "$SD"; mkdir "$SD"; rsync -a --exclude .git ./ "$SD/"; find "$SD" -name '*.html' -exec perl -pi -e 's/\[\[.*?\]\]//g' {} +; }   # the checkout as it is
+unheld() { # the held branch carries the business name in the two operator sentences; every case but the last block starts without it
+  HELDW=$HELD perl -pi -e 's/ under the business name \Q$ENV{HELDW}\E//g; s/ trading as \Q$ENV{HELDW}\E//g' "$SD/terms/index.html" "$SD/privacy/index.html"
+}
+fresh() { rawfresh; to_app; unheld; }   # the modtech.app variant without the held wording, whichever branch is checked out
+notice_marker() { printf 'The second written notice to Paddle was sent.\nsent: %s\n' "${1:-2026-10-29}" > "$SD/tools/notice2-sent.txt"; }
+approval_marker() { printf 'Website approval seen in the Paddle dashboard.\napproved: %s\n' "${1:-2026-11-20}" > "$SD/tools/website-approval-seen.txt"; }
+W1=$(printf '%s%s' Mod Tech); W2=$(printf '%s%s' Stud ios)   # the two words of the held business-name wording, kept apart so that this file never holds the phrase
+HELD="$W1 $W2"                                              # the held wording itself, built at run time
+heldvariant() { printf '%s%s%s%s%s' Mod Tech "$1" Stud ios; }   # the same two words with another separator between them
+heldpage() { printf '<p>The Service is operated by Joseph Berhanu, a sole trader under the business name %s in Melbourne.</p>\n' "$1" >> "$SD/terms/index.html"; }
 config() { cat > "$SD/assets/checkout-config.js" <<CFG
 window.MODTECH_CHECKOUT = {
   environment: $1,
@@ -161,6 +195,11 @@ mkrepo() {
         git rm -q -- side.txt;                                                    g commit -q -m "side token gone"
         g checkout -q -;        echo m > main.txt; git add -- main.txt;           g commit -q -m "mainline work"
         g merge -q --no-ff side -m "merge side" ;;
+      heldhist) # the held wording ($2, may be several lines) added to a page by one unpushed commit and taken out again by the next (HEAD's files are clean)
+        printf '<p>%s</p>\n' "$2" >> terms/index.html; git add -- terms/index.html;   g commit -q -m "add the wording"
+        git checkout -q HEAD~1 -- terms/index.html;     git add -- terms/index.html;   g commit -q -m "take it out again" ;;
+      heldmsg) # the held wording ($2) only in a commit MESSAGE
+        g commit -q --allow-empty -m "note: $2" ;;
       detached) echo '<!-- harmless -->' >> index.html; git add -- index.html; g commit -q -m "harmless edit"; g checkout -q --detach ;;
       none) ;;   # nothing unpushed: HEAD is origin/main
       tokenbranch) echo '<!-- harmless -->' >> index.html; git add -- index.html; g commit -q -m "harmless edit"; g checkout -q -b "br-$GOODTOKEN" ;;
@@ -512,11 +551,208 @@ fresh; pconfig; printf 'window.MODTECH_WAITLIST = {\n  endpoint: %s,\n  endpoint
 fresh; pconfig; rm -f "$SD/assets/waitlist-config.js";   expect_paused "a missing waitlist config fails rather than being skipped" 1 'is missing'
 fresh; pconfig; wlcfg "'$WLURL'"; wlmarker;              expect "the same waitlist rules apply in LIVE mode, not only paused" 1 'uncommitted|not open yet|Subscriptions'
 
+# ---- which website the tree is: the CNAME, and everything that names a host must agree with it ---------------------------------------------
+# Before this block existed the guard read no host at all: a half-swapped tree, or the modtechstudios.com variant in the modtech.app repo,
+# printed "safe to publish". The default date (the stand-in `date`) is after every floor here, so these cases test the domain rules alone.
+fresh; pconfig;                                                           expect_paused "domain: the modtech.app variant passes (--paused)" 0 'safe to publish'
+fresh; config "'live'" "'$GOODTOKEN'" "'$GOODPRICE'" true; mkrepo clean; expect "domain: the modtech.app variant passes (live)" 0 'safe to publish'
+fresh; pconfig; studios; notice_marker;                                   expect_paused "domain: the modtechstudios.com variant passes with its notice marker committed (--paused); the privacy sentence that names modtech.app and www.modtech.app stays as it is (a text line, not a URL, by decision)" 0 'safe to publish'
+# the CNAME itself: exactly one of two hosts, one line
+fresh; pconfig; printf 'modtech.app\n' > "$SD/CNAME";                    expect_paused "domain: a CNAME with one trailing newline is accepted" 0
+fresh; pconfig; printf 'modtech.app\n\n' > "$SD/CNAME";                  expect_paused "domain: a CNAME with two trailing newlines fails" 1 'CNAME must be exactly'
+fresh; pconfig; printf 'modtech.app\r\n' > "$SD/CNAME";                 expect_paused "domain: a CNAME with a carriage return fails" 1 'CNAME must be exactly'
+fresh; pconfig; printf 'modtech.app ' > "$SD/CNAME";                    expect_paused "domain: a CNAME with a trailing space fails" 1 'CNAME must be exactly'
+fresh; pconfig; printf ' modtech.app' > "$SD/CNAME";                    expect_paused "domain: a CNAME with a leading space fails" 1 'CNAME must be exactly'
+fresh; pconfig; printf 'www.modtech.app' > "$SD/CNAME";                 expect_paused "domain: a CNAME of www.modtech.app fails" 1 'CNAME must be exactly'
+fresh; pconfig; printf 'MODTECH.APP' > "$SD/CNAME";                     expect_paused "domain: a CNAME in capitals fails (exactly means exactly)" 1 'CNAME must be exactly'
+fresh; pconfig; printf 'modtechstudios.com.' > "$SD/CNAME";             expect_paused "domain: a CNAME with a trailing dot fails" 1 'CNAME must be exactly'
+fresh; pconfig; printf 'modtech.com' > "$SD/CNAME";                    expect_paused "domain: a CNAME naming some other host fails" 1 'CNAME must be exactly'
+fresh; pconfig; printf 'modtech.app\nmodtechstudios.com\n' > "$SD/CNAME"; expect_paused "domain: a CNAME naming both hosts on two lines fails" 1 'CNAME must be exactly'
+fresh; pconfig; : > "$SD/CNAME";                                          expect_paused "domain: an empty CNAME fails" 1 'CNAME must be exactly'
+fresh; pconfig; rm "$SD/CNAME";                                           expect_paused "domain: a missing CNAME fails" 1 'CNAME is missing'
+# a half-swapped site: the CNAME on one host and the rest on the other
+fresh; pconfig; printf 'modtechstudios.com' > "$SD/CNAME";               expect_paused "domain: half-swapped (only the CNAME moved) fails on the tags, the sitemap and robots.txt" 1 'canonical tag does not start with https://modtechstudios.com/'
+fresh; pconfig; printf 'modtechstudios.com' > "$SD/CNAME";               expect_paused "domain: half-swapped (only the CNAME moved) also fails on the sitemap" 1 'sitemap.xml has a <loc>'
+fresh; pconfig; printf 'modtechstudios.com' > "$SD/CNAME";               expect_paused "domain: half-swapped (only the CNAME moved) also fails on robots.txt" 1 'robots.txt has a Sitemap line'
+fresh; pconfig; studios; notice_marker; printf 'modtech.app' > "$SD/CNAME"; expect_paused "domain: half-swapped the other way (everything moved but the CNAME) fails" 1 'canonical tag does not start with https://modtech.app/'
+# one element on the wrong host, each kind in turn (modtech.app variant, then the studios variant)
+fresh; pconfig; perl -pi -e 's#(rel="canonical" href=")https://modtech\.app/#${1}https://modtechstudios.com/#' "$SD/index.html";            expect_paused "domain: one canonical tag on the other host fails" 1 'canonical tag does not start with https://modtech.app/'
+fresh; pconfig; perl -pi -e 's#(property="og:url" content=")https://modtech\.app/#${1}https://modtechstudios.com/#' "$SD/pricing/index.html";    expect_paused "domain: one og:url tag on the other host fails" 1 'og:url tag does not start with https://modtech.app/'
+fresh; pconfig; perl -pi -e 's#(property="og:image" content=")https://modtech\.app/#${1}https://modtechstudios.com/#' "$SD/privacy/index.html";  expect_paused "domain: one og:image tag on the other host fails" 1 'og:image tag does not start with https://modtech.app/'
+fresh; pconfig; perl -pi -e 's#<loc>https://modtech\.app/terms/#<loc>https://modtechstudios.com/terms/#' "$SD/sitemap.xml";                         expect_paused "domain: one sitemap <loc> on the other host fails" 1 'sitemap.xml has a <loc> that does not start with https://modtech.app/'
+fresh; pconfig; perl -pi -e 's#Sitemap: https://modtech\.app/#Sitemap: https://modtechstudios.com/#' "$SD/robots.txt";                              expect_paused "domain: the robots.txt Sitemap line on the other host fails" 1 'robots.txt has a Sitemap line that does not start with https://modtech.app/'
+fresh; pconfig; studios; notice_marker; perl -pi -e 's#(rel="canonical" href=")https://modtechstudios\.com/#${1}https://modtech.app/#' "$SD/refunds/index.html";         expect_paused "domain: studios variant, one canonical tag left on modtech.app fails" 1 'canonical tag does not start with https://modtechstudios.com/'
+fresh; pconfig; studios; notice_marker; perl -pi -e 's#(property="og:image" content=")https://modtechstudios\.com/#${1}https://modtech.app/#' "$SD/index.html";    expect_paused "domain: studios variant, one og:image tag left on modtech.app fails" 1 'og:image tag does not start with https://modtechstudios.com/'
+fresh; pconfig; studios; notice_marker; perl -pi -e 's#<loc>https://modtechstudios\.com/pricing/#<loc>https://modtech.app/pricing/#' "$SD/sitemap.xml";                       expect_paused "domain: studios variant, one sitemap <loc> left on modtech.app fails" 1 'sitemap.xml has a <loc> that does not start with https://modtechstudios.com/'
+fresh; pconfig; studios; notice_marker; perl -pi -e 's#Sitemap: https://modtechstudios\.com/#Sitemap: https://modtech.app/#' "$SD/robots.txt";                            expect_paused "domain: studios variant, the robots.txt Sitemap line left on modtech.app fails" 1 'robots.txt has a Sitemap line that does not start with https://modtechstudios.com/'
+# the tags must be there, once each, and readable
+fresh; pconfig; perl -ni -e 'print unless /rel="canonical"/' "$SD/terms/index.html";                                                             expect_paused "domain: a page without its canonical tag fails (a deleted tag cannot hide a wrong host)" 1 'terms/index.html must carry exactly one canonical tag \(found 0\)'
+fresh; pconfig; perl -pi -e 's#(<link rel="canonical" href="[^"]*">)#$1\n$1#' "$SD/index.html";                                                expect_paused "domain: two canonical tags on one page fail" 1 'index.html must carry exactly one canonical tag \(found 2\)'
+fresh; pconfig; perl -pi -e 's#<link rel="canonical" href=#<link rel="canonical"\n  href=#' "$SD/pricing/index.html";                                expect_paused "domain: a canonical tag split over two lines is not accepted silently" 1 'pricing/index.html must carry exactly one canonical tag \(found 0\)'
+fresh; pconfig; perl -pi -e 's#(rel="canonical" href=")https://#${1}http://#' "$SD/index.html";                                                  expect_paused "domain: an http:// canonical fails" 1 'canonical tag does not start with'
+fresh; pconfig; perl -pi -e 's#(rel="canonical" href=")https://modtech\.app/#${1}https://modtech.app.example.net/#' "$SD/index.html";                expect_paused "domain: a look-alike host that merely starts with the host name fails" 1 'canonical tag does not start with'
+fresh; pconfig; perl -pi -e 's#(rel="canonical" href=")https://modtech\.app/#${1}//modtech.app/#' "$SD/index.html";                                   expect_paused "domain: a protocol-relative canonical fails" 1 'canonical tag does not start with'
+fresh; pconfig; perl -pi -e 's#(property="og:image" )content=#${1}data-x=#' "$SD/index.html";                                                       expect_paused "domain: an og:image tag with no content value fails (cannot be read)" 1 'readable'
+fresh; pconfig; : > "$SD/sitemap.xml";                                                                                                                expect_paused "domain: a sitemap with no <loc> fails" 1 'at least one <loc>'
+fresh; pconfig; rm "$SD/sitemap.xml";                                                                                                                 expect_paused "domain: a missing sitemap fails" 1 'sitemap.xml is missing'
+fresh; pconfig; perl -pi -e 's#<loc>https://modtech\.app/terms/</loc>#<loc>\n    https://modtech.app/terms/</loc>#' "$SD/sitemap.xml";             expect_paused "domain: a <loc> that does not sit on one line is not accepted silently" 1 'at least one <loc>'
+fresh; pconfig; perl -ni -e 'print unless /^Sitemap:/' "$SD/robots.txt";                                                                              expect_paused "domain: a robots.txt without a Sitemap line fails" 1 'no Sitemap: line'
+fresh; pconfig; rm "$SD/robots.txt";                                                                                                                  expect_paused "domain: a missing robots.txt fails" 1 'robots.txt is missing'
+# the visible host labels: the grey bar on three pages and the 404 sentence
+fresh; pconfig; studios; notice_marker; perl -pi -e 's#<span>modtechstudios\.com</span>#<span>modtech.app</span>#' "$SD/terms/index.html";        expect_paused "domain: studios variant, the Terms bar still reading modtech.app fails" 1 'visible host label names modtech.app'
+fresh; pconfig; studios; notice_marker; perl -pi -e 's#exist on modtechstudios\.com#exist on modtech.app#' "$SD/404.html";                          expect_paused "domain: studios variant, the 404 sentence still naming modtech.app fails" 1 'visible host label names modtech.app'
+fresh; pconfig; perl -pi -e 's#<span>modtech\.app</span>#<span>modtechstudios.com</span>#' "$SD/refunds/index.html";                                  expect_paused "domain: modtech.app variant, the Refunds bar reading modtechstudios.com fails" 1 'visible host label names modtechstudios.com'
+fresh; pconfig; perl -pi -e 's#exist on modtech\.app#exist on modtechstudios.com#' "$SD/404.html";                                                   expect_paused "domain: modtech.app variant, the 404 sentence naming modtechstudios.com fails" 1 'visible host label names modtechstudios.com'
+fresh; pconfig; perl -pi -e 's#<span>modtech\.app</span>##' "$SD/privacy/index.html";                                                                  expect_paused "domain: a host label that was removed fails (the check must find what it checks)" 1 'privacy/index.html has no <span>modtech.app</span>'
+fresh; pconfig; perl -pi -e 's#does not exist on modtech\.app#does not exist here#' "$SD/404.html";                                                   expect_paused "domain: a 404 sentence that no longer names the host fails" 1 "404.html does not say"
+# both hosts as URLs anywhere in the published files
+fresh; pconfig; echo '<p><a href="https://modtechstudios.com/x">elsewhere</a></p>' >> "$SD/index.html";                                               expect_paused "domain: modtech.app variant with one link to modtechstudios.com fails (both hosts)" 1 'both modtech.app and modtechstudios.com'
+fresh; pconfig; studios; notice_marker; echo '<p><a href="https://modtech.app/x">elsewhere</a></p>' >> "$SD/index.html";                              expect_paused "domain: studios variant with one link to modtech.app fails (both hosts)" 1 'both modtech.app and modtechstudios.com'
+fresh; pconfig; studios; notice_marker; echo '<p><a href="https://www.modtech.app/x">elsewhere</a></p>' >> "$SD/index.html";                          expect_paused "domain: studios variant with one link to www.modtech.app fails (both hosts)" 1 'both modtech.app and modtechstudios.com'
+fresh; pconfig; echo "var u = '//modtechstudios.com/y';" >> "$SD/assets/confirm.js";                                                                  expect_paused "domain: a protocol-relative URL to the other host in a script fails" 1 'both modtech.app and modtechstudios.com'
+fresh; pconfig; echo 'see http://www.modtechstudios.com/ for more' > "$SD/assets/note.txt";                                                           expect_paused "domain: an http:// mention of the other host in a text file fails" 1 'both modtech.app and modtechstudios.com'
+fresh; pconfig; mkdir -p "$SD/assets/tools"; echo 'https://modtechstudios.com/' > "$SD/assets/tools/x.html";                                          expect_paused "domain: a nested tools directory is published, so a URL there counts" 1 'both modtech.app and modtechstudios.com'
+fresh; pconfig; echo 'https://modtechstudios.com/ and https://modtech.app/' > "$SD/tools/note.txt";                                                    expect_paused "domain: the top-level tools/ folder is not published (_config.yml excludes it), so URLs there are not counted" 0 'safe to publish'
+fresh; pconfig; echo 'mail contact@modtech.app, the address of this website (www.modtech.app is not a URL here)' >> "$SD/privacy/index.html";          expect_paused "domain: a bare host name in text (not a URL) is not counted as a second host" 0 'safe to publish'
+# the contact address does not follow the host
+fresh; pconfig; echo '<p>Write to contact@modtechstudios.com</p>' >> "$SD/index.html";                                                                expect_paused "domain: modtech.app variant, a page with contact@modtechstudios.com fails" 1 'contact address is not contact@modtech.app'
+fresh; pconfig; studios; notice_marker; echo '<p>Write to contact@modtechstudios.com</p>' >> "$SD/index.html";                                         expect_paused "domain: studios variant, a page with contact@modtechstudios.com fails (contact stays contact@modtech.app on both)" 1 'contact address is not contact@modtech.app'
+fresh; pconfig; studios; notice_marker; echo "var m = 'contact@modtechstudios.com';" >> "$SD/assets/checkout.js";                                       expect_paused "domain: studios variant, contact@modtechstudios.com in a page script fails" 1 'contact address is not contact@modtech.app'
+fresh; pconfig; echo '<p>Write to contact@modtech.app.example.net</p>' >> "$SD/index.html";                                                          expect_paused "domain: contact@modtech.app.example.net (a longer host) fails" 1 'contact address is not contact@modtech.app'
+fresh; pconfig; echo '<p>Write to contact@modtech.com</p>' >> "$SD/terms/index.html";                                                                 expect_paused "domain: contact@modtech.com (a typo) fails" 1 'contact address is not contact@modtech.app'
+fresh; pconfig; echo '<p><a href="mailto:hello@modtech.app">mail</a></p>' >> "$SD/index.html";                                                         expect_paused "domain: a mailto: link to another address fails" 1 'mailto: link does not point at contact@modtech.app'
+fresh; pconfig; echo '<p>Write to hello@modtechstudios.com</p>' >> "$SD/index.html";                                                                   expect_paused "domain: any address at modtechstudios.com fails" 1 'email address at modtechstudios.com'
+fresh; pconfig; echo '<p>Write to Contact@MODTECH.APP.</p>' >> "$SD/index.html";                                                                       expect_paused "domain: the contact address in capitals and at the end of a sentence is accepted" 0 'safe to publish'
+fresh; pconfig; studios; notice_marker;                                                                                                                expect_paused "domain: the studios variant keeps all of the page contact strings on contact@modtech.app" 0 'safe to publish'
+
+# ---- the date floor: nothing before 2026-11-17, in both modes, on both variants ----
+# FAKE_TODAY sets the day the stand-in `date` reports for one run. The guard asks for Melbourne's today (TZ=Australia/Melbourne date +%F).
+fresh; pconfig; FAKE_TODAY=2026-10-26 expect_paused "date: paused, today 2026-10-26 (before the floor) fails" 1 'before 2026-11-17'
+fresh; pconfig; FAKE_TODAY=2026-11-16 expect_paused "date: paused, the day before the floor fails" 1 'before 2026-11-17'
+fresh; pconfig; FAKE_TODAY=2026-11-17 expect_paused "date: paused, the floor day itself passes" 0 'safe to publish'
+fresh; config "'live'" "'$GOODTOKEN'" "'$GOODPRICE'" true; mkrepo clean; FAKE_TODAY=2026-11-16 expect "date: live, the day before the floor fails" 1 'before 2026-11-17'
+fresh; config "'live'" "'$GOODTOKEN'" "'$GOODPRICE'" true; mkrepo clean; FAKE_TODAY=2026-11-17 expect "date: live, the floor day itself passes" 0 'safe to publish'
+fresh; config "'live'" "'$GOODTOKEN'" "'$GOODPRICE'" true;                FAKE_TODAY=2026-11-16 expect "date: live, outside a git checkout, the floor still applies" 1 'before 2026-11-17'
+fresh; pconfig; studios; notice_marker 2026-10-29; FAKE_TODAY=2026-11-16 expect_paused "date: the studios variant is held by the same floor" 1 'before 2026-11-17'
+for baddate in FAIL "" 2026-02-30 2026-13-01 2026-00-10 20261117 17-11-2026 "2026-11-17 extra"; do
+  fresh; pconfig; FAKE_TODAY=$baddate expect_paused "date: an unreadable date ('$baddate') fails closed" 1 "could not be read"
+done
+fresh; pconfig; FAKE_DATE_LOG="$T/datelog" expect_paused "date: the guard asks the date command for Melbourne's today" 0 'safe to publish'
+out=$(cat "$T/datelog" 2>/dev/null); code=1; printf '%s\n' "$out" | G -qx 'TZ=Australia/Melbourne' && code=0; outcome "" "date: the guard sets TZ=Australia/Melbourne when it asks for the date" 0
+
+# ---- the held operator wording: in neither the tree nor the unpushed history before 2026-11-26 ----
+# HELD is the business-name wording from the sent notice, built at run time. The hostname modtechstudios.com has no separator, so it never matches.
+fresh; pconfig; heldpage "$HELD";                       FAKE_TODAY=2026-11-25 expect_paused "held: the wording in the Terms the day before 2026-11-26 fails (paused)" 1 'operator wording is in the files'
+fresh; pconfig; heldpage "$HELD";                       FAKE_TODAY=2026-11-26 expect_paused "held: the same tree on 2026-11-26 passes" 0 'safe to publish'
+fresh; pconfig; heldpage "$HELD";                       FAKE_TODAY=2026-12-31 expect_paused "held: the same tree well after 2026-11-26 passes" 0 'safe to publish'
+fresh; config "'live'" "'$GOODTOKEN'" "'$GOODPRICE'" true; heldpage "$HELD"; mkrepo clean; FAKE_TODAY=2026-11-25 expect "held: the wording in the Terms fails in LIVE mode too" 1 'operator wording is in the files'
+fresh; config "'live'" "'$GOODTOKEN'" "'$GOODPRICE'" true; heldpage "$HELD";                FAKE_TODAY=2026-11-25 expect "held: the wording fails outside a git checkout too (the tree is scanned)" 1 'operator wording is in the files'
+fresh; config "'live'" "'$GOODTOKEN'" "'$GOODPRICE'" true;                                   FAKE_TODAY=2026-11-25 expect "held: a clean tree outside a git checkout passes with a NOTE that the history was not scanned" 0 'history was NOT scanned'
+fresh; pconfig; printf '<p>%s</p>\n' "$HELD" > "$SD/privacy/extra.html"; FAKE_TODAY=2026-11-25 expect_paused "held: the wording in any other published file fails" 1 'operator wording is in the files'
+fresh; pconfig; printf '%s\n' "$HELD" > "$SD/tools/other.txt";   FAKE_TODAY=2026-11-25 expect_paused "held: the wording in a file under tools/ fails (tools/ is not exempt)" 1 'operator wording is in the files'
+fresh; pconfig; printf 'x\n' > "$SD/assets/$(heldvariant ' ').txt"; FAKE_TODAY=2026-11-25 expect_paused "held: the wording in a FILE NAME fails" 1 'operator wording is in the files'
+SEPN=("a space" "two spaces" "&nbsp;" "&#160;" "&#xA0;" "&#xa0;" "a hyphen" "an underscore" "a plus sign" "%20" "a no-break space (UTF-8)" "a tab" "a spaced hyphen" "a zero-width space (UTF-8)" "a soft hyphen (UTF-8)")
+SEPV=(' ' '  ' '&nbsp;' '&#160;' '&#xA0;' '&#xa0;' '-' '_' '+' '%20' "$(printf '\302\240')" "$(printf '\t')" ' - ' "$(printf '\342\200\213')" "$(printf '\302\255')")
+i=0
+while [ "$i" -lt "${#SEPV[@]}" ]; do
+  fresh; pconfig; heldpage "$(heldvariant "${SEPV[$i]}")"; FAKE_TODAY=2026-11-25 expect_paused "held: the wording with ${SEPN[$i]} between the words fails" 1 'operator wording is in the files'
+  i=$((i+1))
+done
+fresh; pconfig; heldpage "$(heldvariant ' ' | sed 's/s$//')"; FAKE_TODAY=2026-11-25 expect_paused "held: control, the singular (the first word and 'Studio') is not the held wording and passes" 0 'safe to publish'
+fresh; pconfig; printf '<p>%s\n  %s</p>\n' "$W1" "$W2" >> "$SD/terms/index.html";   FAKE_TODAY=2026-11-25 expect_paused "held: the two words split over two lines fail" 1 'operator wording is in the files'
+fresh; pconfig; printf '<p>%s</p>\n' "$(heldvariant ' ' | tr 'a-z' 'A-Z')" >> "$SD/terms/index.html"; FAKE_TODAY=2026-11-25 expect_paused "held: the wording in capitals fails" 1 'operator wording is in the files'
+fresh; pconfig; printf '<p>%s</p>\n' "$(heldvariant ' ' | tr 'A-Z' 'a-z')" >> "$SD/terms/index.html"; FAKE_TODAY=2026-11-25 expect_paused "held: the wording in lower case fails" 1 'operator wording is in the files'
+fresh; pconfig; printf '<p>%s</p>\n' "$(heldvariant '')" >> "$SD/terms/index.html";        FAKE_TODAY=2026-11-25 expect_paused "held: the two words run together (a host name or a handle, no separator) do not match" 0 'safe to publish'
+fresh; pconfig; studios; notice_marker;                                                      FAKE_TODAY=2026-11-25 expect_paused "held: the modtechstudios.com variant itself never trips the wording scan" 0 'safe to publish'
+# the unpushed history: a push publishes every commit, not only the last tree
+fresh; pconfig; mkrepo heldhist "$HELD";                FAKE_TODAY=2026-11-25 expect_paused "held: the wording added and removed by unpushed commits fails (paused)" 1 'unpushed history'
+fresh; config "'live'" "'$GOODTOKEN'" "'$GOODPRICE'" true; mkrepo heldhist "$HELD"; FAKE_TODAY=2026-11-25 expect "held: the wording added and removed by unpushed commits fails (live)" 1 'unpushed history'
+fresh; pconfig; mkrepo heldhist "$HELD";                FAKE_TODAY=2026-11-26 expect_paused "held: the same history on 2026-11-26 passes" 0 'safe to publish'
+fresh; pconfig; mkrepo heldhist "$(heldvariant '&nbsp;')"; FAKE_TODAY=2026-11-25 expect_paused "held: the wording with &nbsp; in an unpushed commit fails" 1 'unpushed history'
+fresh; pconfig; mkrepo heldhist "$(printf '%s\n%s' "$W1" "$W2")"; FAKE_TODAY=2026-11-25 expect_paused "held: the two words on two added lines of one unpushed commit fail" 1 'unpushed history'
+fresh; pconfig; mkrepo heldhist "++ $HELD";             FAKE_TODAY=2026-11-25 expect_paused "held: an added line that itself starts with '++ ' (so the patch line starts '+++ ') is still scanned" 1 'unpushed history'
+fresh; pconfig; mkrepo heldmsg "$HELD";                 FAKE_TODAY=2026-11-25 expect_paused "held: the wording only in an unpushed commit MESSAGE fails" 1 'unpushed history'
+fresh; pconfig; mkrepo heldhist "$HELD";                FAKE_TODAY=2026-11-25 expect_paused "held: the history failure names the commit that added it" 1 'add the wording'
+fresh; pconfig; mkrepo heldhist "$HELD";                FAKE_TODAY=2026-11-25 expect_paused "held: the history failure does not echo the wording itself" 1 'unpushed history' "$HELD"
+fresh; pconfig; mkrepo clean;                           FAKE_TODAY=2026-11-25 expect_paused "held: a clean history passes before 2026-11-26" 0 'safe to publish'
+fresh; config "'live'" "'$GOODTOKEN'" "'$GOODPRICE'" true; mkrepo nomain; FAKE_TODAY=2026-11-25 expect "held: live, no origin/main ref while the hold is active FAILS (the history cannot be scanned), it does not skip" 1 'no origin/main ref'
+fresh; config "'live'" "'$GOODTOKEN'" "'$GOODPRICE'" true; mkrepo nomain; FAKE_TODAY=2026-11-26 expect "held: live, no origin/main ref after the hold has ended passes (live mode never needed the ref)" 0 'safe to publish'
+# the operator sentences themselves, as the held branch would carry them (both pages, the real wording)
+fresh; pconfig
+HELDW=$HELD perl -pi -e 's#an individual trading as a sole trader in Melbourne#an individual trading as a sole trader under the business name $ENV{HELDW} in Melbourne#' "$SD/terms/index.html"
+HELDW=$HELD perl -pi -e 's#ModTech is operated by Joseph Berhanu, a sole trader in Melbourne#ModTech is operated by Joseph Berhanu, a sole trader trading as $ENV{HELDW} in Melbourne#' "$SD/privacy/index.html"
+FAKE_TODAY=2026-11-25 expect_paused "held: the two operator sentences as the held branch carries them fail before 2026-11-26" 1 'operator wording is in the files'
+FAKE_TODAY=2026-11-26 expect_paused "held: the two operator sentences are allowed from 2026-11-26" 0 'safe to publish'
+
+# ---- the second domain: modtechstudios.com is refused until the written notice is on record ----
+# Markers are attestations, so each must be committed, unchanged since, and hold exactly one well-formed line.
+fresh; pconfig; studios;                                              expect_paused "studios: no notice marker fails, and says what to do" 1 'notice2-sent.txt does not exist'
+fresh; pconfig; studios; mkrepo clean; notice_marker;                  expect_paused "studios: a notice marker that was never committed fails" 1 'not committed in HEAD'
+fresh; pconfig; studios; notice_marker; mkrepo clean; notice_marker 2026-10-30; expect_paused "studios: a notice marker edited after it was committed fails" 1 'differs from the committed copy'
+fresh; pconfig; studios; printf 'sent: soon\n' > "$SD/tools/notice2-sent.txt";           expect_paused "studios: a marker whose line is not a date fails" 1 "must read exactly 'sent: YYYY-MM-DD'"
+fresh; pconfig; studios; printf 'sent:2026-10-29\n' > "$SD/tools/notice2-sent.txt";       expect_paused "studios: a marker with no space after the colon fails" 1 "must read exactly"
+fresh; pconfig; studios; printf ' sent: 2026-10-29\n' > "$SD/tools/notice2-sent.txt";      expect_paused "studios: a marker whose line starts with a space fails (no line starts 'sent:')" 1 "found 0"
+fresh; pconfig; studios; printf 'sent: 2026-10-29 or so\n' > "$SD/tools/notice2-sent.txt"; expect_paused "studios: a marker with words after the date fails" 1 "must read exactly"
+fresh; pconfig; studios; printf 'sent: 2026-13-45\n' > "$SD/tools/notice2-sent.txt";      expect_paused "studios: an impossible date (month 13) fails" 1 "must read exactly|not a real calendar date"
+fresh; pconfig; studios; printf 'sent: 2026-02-30\n' > "$SD/tools/notice2-sent.txt";      expect_paused "studios: a date that does not exist (30 February) fails" 1 "not a real calendar date"
+fresh; pconfig; studios; printf 'sent: 2026-10-29\nsent: 2026-10-27\n' > "$SD/tools/notice2-sent.txt"; expect_paused "studios: two sent lines fail (the earlier could be picked)" 1 "exactly one line"
+fresh; pconfig; studios; : > "$SD/tools/notice2-sent.txt";                              expect_paused "studios: an empty marker fails" 1 "found 0"
+fresh; pconfig; studios; notice_marker 2026-10-25;                                       expect_paused "studios: a notice date before the move was decided (2026-10-25) fails" 1 'before 2026-10-26'
+fresh; pconfig; studios; notice_marker 2026-10-26;                                       expect_paused "studios: a notice dated the day the move was decided is accepted" 0 'safe to publish'
+fresh; pconfig; studios; notice_marker 2026-10-29; FAKE_TODAY=2026-11-17 expect_paused "studios: marker 2026-10-29, paused on the floor day passes" 0 'safe to publish'
+fresh; pconfig; studios; notice_marker 2026-11-20; FAKE_TODAY=2026-11-19 expect_paused "studios: a notice dated 2026-11-20 holds a paused publish on 2026-11-19" 1 'waits for the later of'
+fresh; pconfig; studios; notice_marker 2026-11-20; FAKE_TODAY=2026-11-20 expect_paused "studios: the same notice allows a paused publish on 2026-11-20" 0 'safe to publish'
+fresh; pconfig; studios; notice_marker 2026-11-20; FAKE_TODAY=2026-11-21 expect_paused "studios: and on the day after" 0 'safe to publish'
+fresh; pconfig; studios; notice_marker 2026-12-31; FAKE_TODAY=2026-12-30 expect_paused "studios: a notice dated in the future holds a paused publish" 1 'waits for the later of'
+fresh; pconfig; studios; notice_marker 2026-10-29; approval_marker; mkrepo clean; FAKE_TODAY=2026-11-17 expect_paused "studios: --paused does not need the approval marker, and an approval marker does not hurt" 0 'safe to publish'
+fresh; pconfig; notice_marker 2026-12-31;                                                expect_paused "studios markers do not matter to the modtech.app variant (a later notice date, still passes)" 0 'safe to publish'
+fresh; pconfig; printf 'junk\n' > "$SD/tools/notice2-sent.txt"; printf 'junk\n' > "$SD/tools/website-approval-seen.txt"; expect_paused "studios markers do not matter to the modtech.app variant (garbage markers, still passes)" 0 'safe to publish'
+fresh; config "'live'" "'$GOODTOKEN'" "'$GOODPRICE'" true; studios; notice_marker; approval_marker; expect "studios: live, outside a git checkout, the markers cannot be shown to be committed: fails" 1 'cannot be shown'
+# a checkout-on (non-paused) build: 31 days after the notice AND the approval marker
+studios_live() { fresh; config "'live'" "'$GOODTOKEN'" "'$GOODPRICE'" true; studios; notice_marker "$1"; [ -z "$2" ] || approval_marker "$2"; }
+studios_live 2026-10-29 2026-11-20; mkrepo clean; FAKE_TODAY=2026-11-29 expect "studios: live, 31 days after a notice of 2026-10-29 (2026-11-29) with the approval marker passes" 0 'safe to publish'
+studios_live 2026-10-29 2026-11-20; mkrepo clean; FAKE_TODAY=2026-11-28 expect "studios: live, 30 days after the notice (2026-11-28) fails" 1 'waits 31 days'
+studios_live 2026-10-29 2026-11-20; mkrepo clean; FAKE_TODAY=2026-11-28 expect "studios: live, the failure names the first allowed day, 2026-11-29" 1 'not before 2026-11-29'
+studios_live 2026-10-29 "";          mkrepo clean; FAKE_TODAY=2026-12-15 expect "studios: live, long after the notice but with no approval marker fails" 1 "website approval seen"
+studios_live 2026-10-29 2026-11-20; mkrepo clean; approval_marker 2026-11-21; FAKE_TODAY=2026-12-15 expect "studios: live, an approval marker edited after the commit fails" 1 'differs from the committed copy'
+studios_live 2026-10-29 "";          mkrepo clean; approval_marker 2026-11-21; FAKE_TODAY=2026-12-15 expect "studios: live, an approval marker that was never committed fails" 1 'not committed in HEAD'
+studios_live 2026-10-29 2026-11-20; printf 'approved: soon\n' > "$SD/tools/website-approval-seen.txt"; mkrepo clean; FAKE_TODAY=2026-12-15 expect "studios: live, an approval marker with no date fails" 1 "must read exactly 'approved: YYYY-MM-DD'"
+studios_live 2026-10-29 2026-11-20; printf 'approved: 2026-11-20\napproved: 2026-11-21\n' > "$SD/tools/website-approval-seen.txt"; mkrepo clean; FAKE_TODAY=2026-12-15 expect "studios: live, two approved lines fail" 1 'exactly one line'
+studios_live 2026-10-29 2026-11-20; printf 'approved: 2026-02-30\n' > "$SD/tools/website-approval-seen.txt"; mkrepo clean; FAKE_TODAY=2026-12-15 expect "studios: live, an approval date that does not exist fails" 1 'not a real calendar date'
+studios_live 2026-10-29 2026-12-20; mkrepo clean; FAKE_TODAY=2026-12-15 expect "studios: live, an approval dated after today fails" 1 'after today'
+studios_live 2026-10-29 2026-10-25; mkrepo clean; FAKE_TODAY=2026-12-15 expect "studios: live, an approval dated before the move was decided fails" 1 'before 2026-10-26'
+studios_live 2026-10-29 2026-12-15; mkrepo clean; FAKE_TODAY=2026-12-15 expect "studios: live, an approval dated today passes" 0 'safe to publish'
+studios_live 2026-10-29 2026-11-20; rm -f "$SD/tools/notice2-sent.txt"; mkrepo clean; FAKE_TODAY=2026-12-15 expect "studios: live, the approval marker alone (no notice marker) fails" 1 'notice2-sent.txt does not exist'
+studios_live 2026-12-15 2026-12-20; mkrepo clean; FAKE_TODAY=2027-01-14 expect "studios: live, 30 days after 2026-12-15 (2027-01-14, over a year end) fails" 1 'waits 31 days'
+studios_live 2026-12-15 2026-12-20; mkrepo clean; FAKE_TODAY=2027-01-15 expect "studios: live, 31 days after 2026-12-15 (2027-01-15) passes" 0 'safe to publish'
+studios_live 2028-01-30 2028-02-01; mkrepo clean; FAKE_TODAY=2028-02-29 expect "studios: live, 30 days after 2028-01-30 (2028-02-29, a leap day) fails" 1 'waits 31 days'
+studios_live 2028-01-30 2028-02-01; mkrepo clean; FAKE_TODAY=2028-03-01 expect "studios: live, 31 days after 2028-01-30 (2028-03-01) passes" 0 'safe to publish'
+studios_live 2026-10-29 2026-11-20; mkrepo clean; FAKE_TODAY=2026-11-29 expect "studios: live, a pass names the branch and the sha" 0 '^branch: .* sha: [0-9a-f]{40}$'
+
+# ---- the tree exactly as checked out (whichever website it is): the real tree, with the markers a publish would need ----
+# On a modtech.app checkout it passes unaided. On a modtechstudios.com checkout it passes only with the notice marker, and the domain block agrees with the tree.
+REALHOST=$(cat CNAME 2>/dev/null)
+if [ "$REALHOST" = modtechstudios.com ]; then WANT=1; WANTPAT='studios: the CNAME names modtechstudios.com'; else WANT=0; WANTPAT='safe to publish'; fi
+rawfresh; pconfig; rm -f "$SD/tools/notice2-sent.txt" "$SD/tools/website-approval-seen.txt"; expect_paused "real tree ($REALHOST), no markers: modtech.app passes, modtechstudios.com is refused for the missing notice marker and nothing else in the domain block" $WANT "$WANTPAT" 'FAIL: domain:'
+# The tree as checked out, exactly (no normalisation at all): on 2026-11-25 it passes unless it carries the held operator wording, which only the
+# held branch does, and then it must FAIL. On 2026-11-26 it passes either way.
+if tr '\r\n\t' '   ' < terms/index.html | G -qiE 'modtech([[:space:]]|&nbsp;|&#160;|&#[xX][aA]0;|[^[:print:]]|[-_+]|%20)+[s]tudios'; then HELDREAL=1; else HELDREAL=0; fi
+rawfresh; pconfig; notice_marker 2026-10-29; FAKE_TODAY=2026-11-25 expect_paused "real tree ($REALHOST, carries the held wording: $HELDREAL) on 2026-11-25: fails only if it carries the held wording" $HELDREAL
+rawfresh; pconfig; notice_marker 2026-10-29; FAKE_TODAY=2026-11-26 expect_paused "real tree ($REALHOST, carries the held wording: $HELDREAL) on 2026-11-26 passes either way" 0 'safe to publish'
+rawfresh; unheld; pconfig; notice_marker 2026-10-29; FAKE_TODAY=2026-11-17 expect_paused "real tree ($REALHOST) with the notice marker on 2026-11-17 passes (--paused)" 0 'safe to publish'
+rawfresh; unheld; pconfig; notice_marker 2026-10-29; FAKE_TODAY=2026-11-16 expect_paused "real tree ($REALHOST) on 2026-11-16 fails the date floor" 1 'before 2026-11-17'
+rawfresh; config "'live'" "'$GOODTOKEN'" "'$GOODPRICE'" true; notice_marker 2026-10-29; approval_marker 2026-11-20; mkrepo clean; FAKE_TODAY=2026-11-29 expect "real tree ($REALHOST) with both markers on 2026-11-29 passes (live)" 0 'safe to publish'
+
 # ---- the guard and its tests hold no secret-shaped literal (their history is scanned, and so is every copy of their text) ----
 S=$(sed -n "s/^SECRETS='\(.*\)'$/\1/p" tools/check-before-publish.sh)
 if [ -z "$S" ]; then n="the SECRETS pattern could not be read"; else n=$(cat tools/check-before-publish.sh tools/test-guard.sh | sed "s/$SANDBOXPRICE//g" | G -cE "$S|live_[A-Za-z0-9]{27}|pri_[a-z0-9]{26}"); fi
 out="lines shaped like a secret, a live token or a price id in the guard and its tests (sandbox price id excluded): $n"; code=1; [ "$n" = 0 ] && code=0
 outcome "" "the guard and its tests hold no secret-shaped literal" 0
+
+# ---- neither the guard nor its tests hold the held business-name wording (nothing is exempt from the scan, so they must not contain it) ----
+n=$(cat tools/check-before-publish.sh tools/test-guard.sh | tr '\r\n\t' '   ' | G -ciE 'modtech([[:space:]]|&nbsp;|&#160;|&#[xX][aA]0;|[^[:print:]]|[-_+]|%20)+[s]tudios')
+out="files of the guard and its tests that hold the held wording (any separator, lines joined): $n"; code=1; [ "$n" = 0 ] && code=0
+outcome "" "the guard and its tests do not hold the held business-name wording" 0
 
 # ---- arguments ----
 fresh; pconfig; expect_args "an unknown flag exits 2" 2 --bogus
